@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pagetitle">安比薩遊樂園</title>
+  <!-- 引入 Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+
+
+
+  <style>
+    /* 固定頁尾在網頁底部 */
+    footer {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      border-top: 3px solid #ffcc00;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 主體樣式 */
+    /* 調整主體和頁尾 */
+    body {
+      font-family: "Arial", sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    /* 導覽列樣式 */
+    .navbar {
+      background-color: #ffcc00;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar-brand {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-nav .nav-link {
+      color: #333;
+      font-weight: bold;
+      margin: 0 10px;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ff4500;
+    }
+
+    /* Hero 區域 */
+    header {
+      background: linear-gradient(to bottom right, #87ceeb, #ffcc00);
+      color: white;
+      text-align: center;
+      padding: 6rem 1rem;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 4rem;
+      font-weight: bold;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    header p {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    header a {
+      font-size: 1.25rem;
+      padding: 1rem 2rem;
+      background-color: #ff6600;
+      color: #fff;
+      border-radius: 10px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s, background-color 0.3s;
+    }
+
+    header a:hover {
+      background-color: #ff4500;
+      transform: scale(1.1);
+    }
+
+    /* 公告區域 */
+    #announcementCarousel {
+      background-color: #94be20;
+      border: 3px solid #06a80e;
+      border-radius: 20px;
+      padding: 1rem;
+      margin: 2rem auto;
+      width: 80%;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .carousel-inner p {
+      font-size: 1.25rem;
+      color: #333;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    /* 卡片區域 */
+    .card {
+      background-color: #ffffff;
+      border: none;
+      border-radius: 15px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ff6600;
+    }
+
+    .card:before {
+      content: attr(data-icon);
+      font-size: 3rem;
+      color: #ffa500;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2.5rem;
+      }
+
+      header p {
+        font-size: 1rem;
+      }
+
+      #announcementCarousel {
+        width: 90%;
+      }
+    }
+
+    .language-switch {
+      margin-left: auto;
+      /* 將按鈕推到右側 */
+      display: flex;
+      gap: 10px;
+      /* 按鈕之間的間距 */
+    }
+
+    .btn-language {
+      background-color: #ffcc00;
+      color: #333;
+      border: none;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-language:hover {
+      background-color: #ff9900;
+      color: #fff;
+    }
+
+    .btn-language.active {
+      background-color: #ff9900;
+      /* 當前語言按鈕的高亮樣式 */
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <nav></nav>
+
+
+
+
+
+
+  <main>
+
+    <header>
+      <div class="container">
+        <h1 class="display-4" data-i18n="welcome">歡迎來到安比薩遊樂園！</h1>
+        <p class="lead" data-i18n="subtitle">開啟您的奇幻冒險之旅！</p>
+        <a href="buy-ticket.html" class="btn btn-light btn-lg" data-i18n="buyTicket">立即購票</a>
+      </div>
+    </header>
+
+    <!-- 公告區域 -->
+    <div id="announcementCarousel" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <p data-i18n="indexcarousel1">麥香紅茶十塊錢 歡迎購買！</p>
+        </div>
+        <div class="carousel-item">
+          <p data-i18n="indexcarousel2">科學麵也十塊錢 歡迎購買！</p>
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#announcementCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">上一則公告</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#announcementCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">下一則公告</span>
+      </button>
+    </div>
+
+    <!-- 購票流程提示 -->
+    <div class="container py-5">
+      <h2 class="text-center" data-i18n="processAdventure">如何開始冒險？</h2>
+      <div class="row text-center">
+        <div class="col-md-4">
+          <div class="card shadow-sm mb-4" data-icon="🎟️">
+            <div class="card-body">
+              <h5 class="card-title" data-i18n="step1">1. 購票</h5>
+              <p class="card-text" data-i18n="step1Text">選擇票種並付款，獲取你的入園資格</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm mb-4" data-icon="🛂">
+            <div class="card-body">
+              <h5 class="card-title" data-i18n="step2">2. 檢票</h5>
+              <p class="card-text" data-i18n="step2Text">使用手環或序號在入口進行檢票，進入園區。</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow-sm mb-4" data-icon="🎢">
+            <div class="card-body">
+              <h5 class="card-title" data-i18n="step3">3. 開啟冒險</h5>
+              <p class="card-text" data-i18n="step3Text">購票及檢票成功後，開始您的冒險旅程！</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+
+
+    function loadTranslationFile(filePath, callback) {
+      const script = document.createElement('script');
+      script.src = filePath;
+      script.type = 'module';
+
+      // 動態加載後執行 callback
+      script.onload = () => callback();
+      script.onerror = () => console.error(`Failed to load ${filePath}`);
+      document.head.appendChild(script);
+    }
+
+    // 動態加載 i18n 文件
+    const page = location.pathname.split('/').pop().replace('.html', '');
+    const i18nFilePath = `lang/${page}-i18n.js`; // 根據當前頁面名稱加載對應翻譯文件
+
+    loadTranslationFile(i18nFilePath, () => {
+      import(`./${i18nFilePath}`).then(({ translations }) => {
+        window.translations = translations; // 將翻譯數據存入全局變數
+        initializePage();
+      });
+    });
+
+    // 初始化頁面
+    function initializePage() {
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      setLanguage(savedLang);
+    }
+
+    // 設置語言
+    function setLanguage(lang) {
+  const elements = document.querySelectorAll('[data-i18n]');
+  elements.forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const translation = translations[lang]?.[key];
+    if (translation) {
+      el.textContent = translation;
+    }
+  });
+
+  // 更新按鈕上的語言名稱
+  const currentLangText = lang === 'zh-TW' ? '中文' : 'English';
+  document.querySelector('[data-i18n="currentLang"]').textContent = currentLangText;
+
+  // 保存選擇到本地存儲
+  localStorage.setItem('language', lang);
+}
+
+
+// 初始化語言
+document.addEventListener('DOMContentLoaded', () => {
+  const savedLang = localStorage.getItem('language') || 'en';
+  setLanguage(savedLang);
+});
+
+  </script>
+
+
+  <!-- 引入共用 Navbar CSS -->
+  <link href="navbar/navbar.css" rel="stylesheet">
+  <script src="navbar/navbar.js"></script>
+
+  
+
+  <!-- 引入 Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  
+</body>
+
+<footer>
+  <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
+  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜　41241215@nfu.edu.tw</p>
+
+</footer>
+
+</html>

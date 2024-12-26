@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">購票系統</title>
+  <!-- 引入 Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    select.ticket-type {
+      display: inline-block;
+      visibility: visible;
+    }
+
+/* 確保頁面內其他元素不影響 footer 的定位 */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%; /* 保證內容的佔位高度 */
+}
+
+/* Footer 固定樣式 */
+.footer {
+  position: fixed; /* 固定在視窗位置 */
+  bottom: 0; /* 垂直位置設為最底部 */
+  width: 100%; /* 寬度拉滿整個視窗 */
+  background-color: #343a40; /* 深灰背景 */
+  color: white; /* 白色文字 */
+  text-align: center; /* 文字置中 */
+  padding: 10px 0; /* 適當內距 */
+  z-index: 1000; /* 保證不被其他內容遮擋 */
+}
+
+/* 頁面主要內容 */
+.content {
+  padding-bottom: 50px; /* 留出 footer 的高度空間，避免內容被遮住 */
+}
+
+  </style>
+</head>
+
+<body>
+  <!-- 導覽列 -->
+  <nav></nav>
+
+  <!-- 購票與儲值表單 -->
+  <div class="container py-5">
+    <h1 class="text-center mb-4" data-i18n="formTitle">購票系統</h1>
+    <form id="ticketForm">
+      <div id="userList">
+        <!-- 初始輸入框 -->
+        <div class="row mb-3 user-entry" data-initial="true">
+          <div class="col-md-6">
+            <input type="text" class="form-control user-name " data-i18n-placeholder="inputName" placeholder="輸入姓名">
+          </div>
+          <div class="col-md-4">
+            <select class="form-select ticket-type">
+              <option value="100" data-i18n="adultTicket">成人票 - $100</option>
+              <option value="50" data-i18n="childTicket">兒童票 - $50</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="button" class="btn btn-danger remove-user" disabled data-i18n="removeButton">刪除</button>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-primary mb-3" id="addUser" data-i18n="addUserButton">新增購票人</button>
+
+      <div class="alert alert-info text-center" data-i18n="promptMessage" id="promptMessage">
+        請讀取您的 RFID 卡片完成購票。
+      </div>
+    </form>
+    <div id="successMessage" class="alert alert-success text-center d-none" role="alert" data-i18n="successMessage">
+      資料已成功儲存至 Firebase！購票資訊已更新。
+    </div>
+    <div id="errorMessage" class="alert alert-danger text-center d-none" role="alert" data-i18n="errorMessage">
+      餘額不足或找不到卡片，請先儲值！
+    </div>
+  </div>
+
+
+  <!-- 引入 Bootstrap JS 和 Firebase -->
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    // Firebase 初始化
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
+      authDomain: "rfid-project-4f420.firebaseapp.com",
+      databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rfid-project-4f420",
+      storageBucket: "rfid-project-4f420.firebasestorage.app",
+      messagingSenderId: "572151111042",
+      appId: "1:572151111042:web:db65f49191f977d56d439b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const userList = document.getElementById("userList");
+      const successMessage = document.getElementById("successMessage");
+      const errorMessage = document.getElementById("errorMessage");
+      const promptMessage = document.getElementById("promptMessage")
+
+      // 新增購票人按鈕邏輯
+      document.getElementById("addUser").addEventListener("click", () => {
+        const userEntry = document.createElement("div");
+        userEntry.className = "row mb-3 user-entry";
+        userEntry.innerHTML = `
+    <div class="col-md-6">
+      <input type="text" class="form-control user-name" data-i18n-placeholder="inputName" placeholder="輸入姓名">
+    </div>
+    <div class="col-md-4">
+      <select class="form-select ticket-type">
+        <option value="100" data-i18n="adultTicket">成人票 - $100</option>
+        <option value="50" data-i18n="childTicket">兒童票 - $50</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="button" class="btn btn-danger remove-user" data-i18n="removeButton">刪除</button>
+    </div>
+  `;
+        userList.appendChild(userEntry);
+
+
+        const displayMessage = (type, content) => {
+          // 隱藏所有訊息框
+          const successMessage = document.getElementById("successMessage");
+          const errorMessage = document.getElementById("errorMessage");
+          const promptMessage = document.getElementById("promptMessage");
+
+          successMessage.classList.add("d-none");
+          errorMessage.classList.add("d-none");
+          promptMessage.classList.add("d-none");
+
+          // 根據類型顯示對應訊息框
+          if (type === "success") {
+            successMessage.innerHTML = content;
+            successMessage.classList.remove("d-none");
+          } else if (type === "error") {
+            errorMessage.textContent = content;
+            errorMessage.classList.remove("d-none");
+          } else if (type === "prompt") {
+            promptMessage.textContent = content;
+            promptMessage.classList.remove("d-none");
+          }
+        };
+
+
+
+        // 更新語言翻譯
+        updateLanguageForNewElements(userEntry);
+
+        // 綁定刪除按鈕
+        userEntry.querySelector(".remove-user").addEventListener("click", handleRemoveUser);
+      });
+
+      // 綁定刪除按鈕邏輯
+      const handleRemoveUser = (e) => {
+        const userEntries = document.querySelectorAll(".user-entry");
+        if (userEntries.length > 1) {
+          e.target.closest(".user-entry").remove();
+        } else {
+          const savedLang = localStorage.getItem('language') || 'zh-TW';
+          if (savedLang === 'zh-TW') {
+            alert("至少需要一個購票人！");
+          } else {
+            alert("At least one ticket buyer is required!");
+          }
+        }
+      };
+
+      // 初始輸入框的刪除按鈕禁用
+      document.querySelectorAll(".remove-user").forEach(button => {
+        button.addEventListener("click", handleRemoveUser);
+      });
+    });
+
+    // RFID 卡片讀取
+    let rfidBuffer = "";
+    const ticketTypeMapping = {
+      100: { "zh-TW": "成人票 - 100", "en": "Adult Ticket - $100" },
+      50: { "zh-TW": "兒童票 - 50 元", "en": "Child Ticket - $50" }
+    };
+
+
+    document.addEventListener("keydown", async (e) => {
+      if (e.target.classList.contains("user-name")) return;
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+
+        const rfid = rfidBuffer.trim();
+        if (!rfid) {
+          const savedLang = localStorage.getItem('language') || 'zh-TW';
+          alert(savedLang === 'zh-TW' ? "請感應有效的 RFID 卡號！" : "Please scan a valid RFID card!");
+          return;
+        }
+        rfidBuffer = ""; // 清空緩衝區
+
+        // 禁用表單並顯示處理中訊息
+        const ticketForm = document.getElementById("ticketForm");
+        ticketForm.classList.add("disabled");
+        const promptMessage = document.getElementById("promptMessage");
+        const savedLang = localStorage.getItem('language') || 'zh-TW';
+        promptMessage.textContent = savedLang === 'zh-TW' ? "正在處理中，請稍候..." : "Processing, please wait...";
+        promptMessage.classList.remove("bg-info", "bg-danger");
+        promptMessage.classList.add("bg-warning");
+
+        const users = [];
+        let totalCost = 0;
+        const userEntries = document.querySelectorAll(".user-entry");
+        userEntries.forEach((entry) => {
+          const name = entry.querySelector(".user-name").value.trim();
+          if (name) {
+            const ticketTypeValue = parseInt(entry.querySelector(".ticket-type").value, 10);
+            const ticketType = ticketTypeMapping[ticketTypeValue] || "未知票種";
+            users.push({ name, ticketPrice: ticketTypeValue, ticketType });
+            totalCost += ticketTypeValue;
+          }
+        });
+
+        if (users.length === 0) {
+          alert(savedLang === 'zh-TW' ? "請至少填寫一位購票人的姓名！" : "Please enter at least one ticket buyer's name!");
+          ticketForm.classList.remove("disabled");
+          promptMessage.textContent = savedLang === 'zh-TW' ? "請讀取您的 RFID 卡片完成購票。" : "Please scan your RFID card to complete the purchase.";
+          promptMessage.classList.remove("bg-warning");
+          promptMessage.classList.add("bg-info");
+          return;
+        }
+
+        const balanceRef = ref(database, `balances/${rfid}`);
+        const ticketsRef = ref(database, `tickets/${rfid}`);
+        const transactionsRef = ref(database, `transactions/${rfid}`);
+        const transactions1Ref = ref(database, `transactions-en/${rfid}`);
+
+
+        try {
+          const balanceSnapshot = await get(balanceRef);
+          let currentBalance = 0;
+
+          if (balanceSnapshot.exists()) {
+            currentBalance = parseInt(balanceSnapshot.val().balance || balanceSnapshot.val(), 10);
+          } else {
+            errorMessage.textContent = savedLang === 'zh-TW' ? "找不到卡片餘額資訊，請重新嘗試。" : "Card balance not found, please try again.";
+            errorMessage.classList.remove("d-none");
+            ticketForm.classList.remove("disabled");
+            promptMessage.textContent = savedLang === 'zh-TW' ? "請讀取您的 RFID 卡片完成購票。" : "Please scan your RFID card to complete the purchase.";
+            promptMessage.classList.remove("bg-warning");
+            promptMessage.classList.add("bg-info");
+            return;
+          }
+
+          // 檢查餘額是否足夠
+          if (currentBalance < totalCost) {
+            errorMessage.textContent = savedLang === 'zh-TW' ? "餘額不足，請先儲值！" : "Insufficient balance, please top up first!";
+            errorMessage.classList.remove("d-none");
+            ticketForm.classList.remove("disabled");
+            promptMessage.textContent = savedLang === 'zh-TW' ? "餘額不足，請先儲值！" : "Insufficient balance, please top up first!";
+            promptMessage.classList.remove("bg-warning");
+            promptMessage.classList.add("bg-danger");
+            return;
+          }
+
+          // 更新購票記錄
+          await push(ticketsRef, { users, timestamp: new Date().toLocaleString() });
+
+          // 更新餘額
+          const newBalance = currentBalance - totalCost;
+          await set(balanceRef, newBalance);
+
+          // 記錄交易
+          await push(transactionsRef, {
+            type: "購票",
+            amount: -totalCost,
+            timestamp: new Date().toLocaleString()
+          });
+
+          await push(transactions1Ref, {
+            type: "buy ticket",
+            amount: -totalCost,
+            timestamp: new Date().toLocaleString()
+          });
+
+          // 動態刷新成功訊息
+          const successElement = document.getElementById("successMessage");
+          const lang = localStorage.getItem('language') || 'zh-TW';
+
+          const purchaseDetails = users
+            .map(user => {
+              const lang = localStorage.getItem('language') || 'zh-TW'; // 取得當前語言
+              const ticketType = typeof user.ticketType === "object"
+                ? (user.ticketType[lang] || (lang === 'zh-TW' ? "未知票種" : "Unknown Ticket"))
+                : user.ticketType; // 如果是物件則根據語言取值
+              return `${lang === 'zh-TW' ? '姓名：' : 'Name:'} ${user.name} - ${ticketType}`;
+            })
+            .join("<br>");
+
+
+
+          const successMessage = `
+  <strong>${lang === 'zh-TW' ? '原本餘額' : 'Original Balance'}:</strong>  ${currentBalance}<br>
+  <strong>${lang === 'zh-TW' ? '購買內容' : 'Purchase Details'}:</strong><br>${purchaseDetails}<br>
+  <strong>${lang === 'zh-TW' ? '剩餘餘額' : 'Remaining Balance'}:</strong>  ${newBalance}
+`;
+
+          successElement.innerHTML = successMessage;
+          successElement.classList.remove("d-none");
+          successElement.classList.remove("d-none");
+          ticketForm.classList.remove("disabled");
+          document.getElementById("ticketForm").reset();
+
+          promptMessage.textContent = savedLang === 'zh-TW' ? "購票成功，請讀取您的 RFID 卡片完成購票。" : "Ticket purchase successful, please scan your RFID card to complete the purchase.";
+          promptMessage.classList.remove("bg-warning", "bg-danger");
+          promptMessage.classList.add("bg-info");
+        } catch (error) {
+          console.error("購票失敗：", error);
+          promptMessage.textContent = savedLang === 'zh-TW' ? "購票失敗，請稍後再試！" : "Ticket purchase failed, please try again later!";
+          promptMessage.classList.remove("bg-warning");
+          promptMessage.classList.add("bg-danger");
+        } finally {
+          ticketForm.classList.remove("disabled");
+        }
+      } else if (/^\d$/.test(e.key)) {
+        rfidBuffer += e.key;
+      } else {
+        e.preventDefault();
+      }
+    });
+
+
+
+
+  </script>
+  <script>
+    function loadTranslationFile(filePath, callback) {
+      const script = document.createElement('script');
+      script.src = filePath;
+      script.type = 'module';
+
+      // 動態加載後執行 callback
+      script.onload = () => callback();
+      script.onerror = () => console.error(`Failed to load ${filePath}`);
+      document.head.appendChild(script);
+    }
+
+    // 動態加載 i18n 文件
+    const page = location.pathname.split('/').pop().replace('.html', '');
+    const i18nFilePath = `./lang/buy-ticket-i18n.js`; // 確保路徑正確
+
+    loadTranslationFile(i18nFilePath, () => {
+      import(`./${i18nFilePath}`).then(({ translations }) => {
+        window.translations = translations; // 將翻譯數據存入全局變數
+        initializePage();
+      });
+    });
+
+    // 初始化頁面
+    function initializePage() {
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      setLanguage(savedLang);
+    }
+
+    // 設置語言
+    function setLanguage(lang) {
+      if (!window.translations || !translations[lang]) {
+        console.error(`無法找到語言包或語言: ${lang}`);
+        return;
+      }
+      // 更新翻譯內容
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新佔位符翻譯
+      const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+      placeholders.forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+
+      // 動態更新按鈕文字，例如新增購票人與刪除按鈕
+      const buttons = document.querySelectorAll('[data-i18n="addUserButton"], [data-i18n="removeButton"]');
+      buttons.forEach(button => {
+        const key = button.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          button.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新語言切換按鈕的文字
+      const currentLangElement = document.querySelector('[data-i18n="currentLang"]');
+      if (currentLangElement) {
+        currentLangElement.textContent = lang === 'zh-TW' ? '中文' : 'English';
+      } else {
+        console.warn('找不到語言切換按鈕');
+      }
+
+      // 更新導航欄的文字
+      const navItems = document.querySelectorAll('[data-i18n="buyTicket"], [data-i18n="topUp"], [data-i18n="checkIn"], [data-i18n="wallet"]');
+      navItems.forEach(item => {
+        const key = item.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          item.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新提示訊息
+      const promptMessage = document.getElementById('promptMessage');
+      if (translations[lang]['promptMessage']) {
+        promptMessage.textContent = translations[lang]['promptMessage'];
+      } else {
+        promptMessage.textContent = "提示翻譯缺失！";
+      }
+
+      // 保存語言到 localStorage
+      localStorage.setItem('language', lang);
+    }
+
+
+
+    // 初始化語言
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('language') || 'en';
+      setLanguage(savedLang);
+    });
+
+    async function loadTranslationFile(filePath) {
+      try {
+        const module = await import(filePath); // 加載翻譯模組
+        return module.translations;
+      } catch (error) {
+        console.error(`無法加載翻譯文件: ${filePath}`, error);
+        return null;
+      }
+    }
+
+    // 初始化翻譯
+    loadTranslationFile(i18nFilePath).then(translations => {
+      if (translations) {
+        window.translations = translations; // 將翻譯設置為全局變數
+        initializePage();
+      } else {
+        console.error('翻譯文件加載失敗');
+      }
+    });
+
+    function updateLanguageForNewElements(parentElement) {
+      const lang = localStorage.getItem('language') || 'zh-TW';
+      const translations = window.translations || {};
+
+      // 更新翻譯內容
+      parentElement.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新佔位符翻譯
+      parentElement.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+    }
+
+
+  </script>
+
+
+  <!-- 引入共用 Navbar CSS -->
+  <link href="navbar/navbar.css" rel="stylesheet">
+  <script src="navbar/navbar.js"></script>
+
+</body>
+
+
+<footer class="footer">
+  <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
+  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw</p>
+</footer>
+
+
+</html>

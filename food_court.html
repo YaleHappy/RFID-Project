@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食街</title>
+
+    <!-- 載入 i18n 字典 -->
+    <script src="lang/food_court-i18n.js"></script>
+
+    <!-- 新增彈窗的 HTML -->
+    <div id="balanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 data-i18n="modal.insufficientBalance">餘額不足</h2>
+            <a href="top-up.html">
+                <button data-i18n="modal.goTopUp">前往儲值</button>
+            </a>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background-color: #aed426;
+            color: #000;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            /* 讓 nav 可以絕對定位 */
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        nav a {
+            margin-right: 15px;
+            color: #333;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #007BFF;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        /* 調整產品卡片樣式 */
+        .product {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+            /* 固定卡片寬度 */
+            height: 450px;
+            /* 固定卡片高度 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product:hover {
+            transform: scale(1.05);
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px;
+            /* 限制圖片高度 */
+            object-fit: contain;
+            /* 確保圖片比例完整 */
+            margin-bottom: 10px;
+        }
+
+        /* 標題樣式 */
+        .product h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+            flex-grow: 1;
+            /* 確保標題可以撐滿 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 調整價格和數量控制區域 */
+        .product p {
+            color: #555;
+            margin: 10px 0;
+        }
+
+
+        /* 按鈕左右對齊 */
+        .product button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            align-self: stretch;
+            /* 拉伸按鈕至整個卡片寬度 */
+            text-align: center;
+        }
+
+        .product button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 數量控制 */
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .quantity-controls button {
+            background-color: #000;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .quantity-controls button:hover {
+            background-color: #bbb;
+            color: #000;
+        }
+
+        .quantity-controls input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+        }
+
+
+
+        /* 購物車圖示 */
+        .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cart-icon:hover {
+            background-color: #0056b3;
+        }
+
+        .cart-icon i {
+            font-size: 24px;
+        }
+
+        .cart-icon .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: red;
+            color: white;
+            font-size: 12px;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -800px;
+            /* 預設隱藏 */
+            width: 400px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+        }
+
+        .cart-sidebar h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .cart-sidebar .cart-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .cart-sidebar .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-sidebar .cart-item span {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .cart-sidebar .checkout-btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .cart-sidebar .checkout-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .cart-sidebar .cart-item button {
+            margin-left: 15px;
+            padding: 5px 10px;
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cart-sidebar .cart-item button:hover {
+            background-color: #ff2e00;
+        }
+
+        /* 彈窗樣式 */
+        .modal {
+            display: none;
+            /* 初始隱藏 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            /* 背景半透明 */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #ff4c4c;
+        }
+
+        .modal-content button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px); /* 與按鈕的距離 */
+    left: 50%; /* 設定基於按鈕的左邊 */
+    transform: translateX(-50%); /* 使選單水平置中 */
+    background: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 1000;
+    opacity: 0;
+    transform: translate(-50%, -10px); /* 確保整體置中並偏移 */
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+        .dropdown:hover .dropdown-menu {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+    display: block; /* 顯示選單 */
+}
+
+
+.dropdown.open .dropdown-menu {
+    display: block; /* 顯示選單 */
+    opacity: 1;
+    transform: translate(-50%, 0); /* 調整到正常位置 */
+}
+
+
+
+
+
+
+        .dropdown {
+            position: relative;
+            overflow: visible;
+            justify-content: center; /* 置中按鈕 */
+            align-items: center;
+
+            /* 確保層級夠高 */
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            text-align: center;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 滑鼠懸停時的樣式 */
+        .dropdown-item:hover {
+            background-color: #007BFF;
+            text-align: center;
+
+            color: #fff;
+        }
+
+        /* 語言切換按鈕 */
+        #languageDropdown {
+            background-color: #444;
+            color: #fff;
+            border: 1px solid #888;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #languageDropdown:hover {
+            background-color: #333;
+        }
+    </style>
+
+    <!-- 載入 Firebase & 主要邏輯 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, get, update, push } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
+            authDomain: "rfid-project-4f420.firebaseapp.com",
+            databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "rfid-project-4f420",
+            storageBucket: "rfid-project-4f420.firebasestorage.app",
+            messagingSenderId: "572151111042",
+            appId: "1:572151111042:web:db65f49191f977d56d439b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let cartItems = [];
+        let cartQuantity = 0;
+        let rfidBuffer = "";
+        let timeout = null;
+
+        // 1. 調整購買數量
+        function updateQuantity(input, delta) {
+            let currentValue = parseInt(input.value) || 1;
+            let newValue = currentValue + delta;
+            if (newValue < 1) newValue = 1;
+            input.value = newValue;
+        }
+
+        // 2. 控制彈窗的顯示與隱藏
+        function showModal() {
+            const modal = document.getElementById("balanceModal");
+            modal.style.display = "block";
+        }
+        function closeModal() {
+            const modal = document.getElementById("balanceModal");
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const modal = document.getElementById("balanceModal");
+            if (modal) {
+                modal.addEventListener("click", (event) => {
+                    if (event.target === modal) {
+                        closeModal();
+                    }
+                });
+                const closeButton = modal.querySelector(".close");
+                if (closeButton) {
+                    closeButton.addEventListener("click", closeModal);
+                }
+            }
+
+            // 語言載入
+            const savedLang = localStorage.getItem("language") || "zh-TW";
+            setLanguage(savedLang);
+        });
+
+        // 3. 更新購物車資料
+        function updateCart(icon, productName, quantity, price) {
+            cartQuantity += quantity;
+
+            // 更新徽章
+            const badge = icon.querySelector('.badge');
+            if (cartQuantity > 0) {
+                if (!badge) {
+                    const newBadge = document.createElement('div');
+                    newBadge.classList.add('badge');
+                    newBadge.textContent = cartQuantity;
+                    icon.appendChild(newBadge);
+                } else {
+                    badge.textContent = cartQuantity;
+                }
+            } else if (badge) {
+                badge.remove();
+            }
+
+            const lang = localStorage.getItem("language") || "zh-TW";
+
+            // 檢查是否已存在該商品
+            const existingItemIndex = cartItems.findIndex(item => item.originalName === productName);
+            if (existingItemIndex !== -1) {
+                cartItems[existingItemIndex].quantity += quantity;
+            } else {
+                cartItems.push({
+                    originalName: productName, // 保存原始名稱
+                    displayName: lang === "zh-TW"
+                        ? productName // 中文名稱
+                        : productNameTranslations[productName] || productName, // 英文名稱
+                    quantity,
+                    price,
+                });
+            }
+        }
+
+        // 4. 處理購買按鈕邏輯
+        function handleBuyButton(productElement, productName, price) {
+            const quantity = parseInt(productElement.querySelector('input').value);
+
+            updateCart(document.querySelector('.cart-icon'), productName, quantity, price);
+
+            // 更新購物車側邊欄
+            updateCartSidebar();
+
+            // 顯示 Toast 通知
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+            showToast(translations.addToCart || "已加入購物車");
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.classList.add('toast');
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // 5. 購物車側邊欄顯示/隱藏
+        function toggleCartSidebar() {
+            const sidebar = document.querySelector('.cart-sidebar');
+            sidebar.classList.toggle('open');
+            updateCartSidebar();
+        }
+
+        // 6. 購物車側邊欄更新
+        function updateCartSidebar() {
+            const sidebar = document.querySelector('.cart-sidebar');
+            const cartItemsList = sidebar.querySelector('.cart-items');
+            cartItemsList.innerHTML = "";
+
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+
+            let totalAmount = 0;
+
+            cartItems.forEach((item, index) => {
+                const totalPrice = item.quantity * item.price;
+                totalAmount += totalPrice;
+
+                const cartItemElement = document.createElement('div');
+                cartItemElement.classList.add('cart-item');
+
+                // 動態顯示名稱
+                const itemName = lang === "zh-TW"
+                    ? item.originalName
+                    : productNameTranslations[item.originalName] || item.originalName;
+
+                const itemInfo = document.createElement('span');
+                itemInfo.textContent = `${itemName} - ${item.price} x ${item.quantity}`;
+
+                const itemTotal = document.createElement('span');
+                itemTotal.textContent = `${totalPrice}`;
+
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = translations.delete || "刪除";
+                deleteButton.addEventListener('click', () => {
+                    removeCartItem(index);
+                    updateCartSidebar();
+                });
+
+                cartItemElement.appendChild(itemInfo);
+                cartItemElement.appendChild(itemTotal);
+                cartItemElement.appendChild(deleteButton);
+                cartItemsList.appendChild(cartItemElement);
+            });
+
+            const totalElement = document.createElement('div');
+            totalElement.classList.add('cart-total');
+            totalElement.innerHTML = `<strong>${translations.cartTotal || "總金額"}: ${totalAmount}</strong>`;
+            cartItemsList.appendChild(totalElement);
+
+            let tipsElement = sidebar.querySelector('.cart-tips');
+            if (!tipsElement) {
+                tipsElement = document.createElement('div');
+                tipsElement.classList.add('cart-tips');
+                sidebar.appendChild(tipsElement);
+            }
+            tipsElement.innerHTML = `<em>${translations.cartTips || "提示: 請使用您的卡片完成結帳。"}<em>`;
+
+            // 餘額顯示(初始隱藏)
+            const balanceElement = document.querySelector('.cart-balance');
+            if (!balanceElement) {
+                const newBalanceElement = document.createElement('div');
+                newBalanceElement.classList.add('cart-balance');
+                newBalanceElement.style.textAlign = 'center';
+                newBalanceElement.style.marginTop = '10px';
+                newBalanceElement.style.fontWeight = 'bold';
+                newBalanceElement.style.display = 'none';
+                sidebar.appendChild(newBalanceElement);
+            }
+        }
+
+        // 7. 刪除購物車項目
+        function removeCartItem(index) {
+            cartQuantity -= cartItems[index].quantity;
+            cartItems.splice(index, 1);
+
+            const badge = document.querySelector('.cart-icon .badge');
+            if (cartQuantity > 0) badge.textContent = cartQuantity;
+            else if (badge) badge.remove();
+        }
+
+        // 8. 語音播報
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel();
+                const lang = localStorage.getItem("language") || "zh-TW";
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang === "zh-TW" ? "zh-TW" : "en-US";
+                utterance.rate = 1.0;
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn("語音合成不支援於此瀏覽器！");
+            }
+        }
+
+        // 9. 結帳處理
+        async function handleCheckout(rfid) {
+            const balanceRef = ref(database, `balances/${rfid}`);
+            const transactionsRef = ref(database, `transactions/${rfid}`);
+            const transactionsRefEn = ref(database, `transactions-en/${rfid}`);
+            const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+
+            if (cartItems.length === 0) {
+                showToast(translations.cartEmpty || "購物車內沒有商品！");
+                return;
+            }
+
+            try {
+                // 讀取餘額
+                const balanceSnapshot = await get(balanceRef);
+                if (!balanceSnapshot.exists()) {
+                    showToast(translations.cardNotRegistered || "卡片未註冊");
+                    return;
+                }
+
+                const originalBalance = parseFloat(balanceSnapshot.val().balance || balanceSnapshot.val());
+                if (originalBalance < totalAmount) {
+                    showModal();
+                    return;
+                }
+
+                const updatedBalance = originalBalance - totalAmount;
+                await update(balanceRef, { balance: updatedBalance });
+
+                // 生成購買項目
+                const purchasedItemsText = cartItems
+                    .map(item => `${item.originalName} x${item.quantity}`)
+                    .join(", ");
+                const purchasedItemsTextEn = cartItems
+                    .map(item => `${productNameTranslations[item.originalName] || item.originalName} x${item.quantity}`)
+                    .join(", ");
+                const timestamp = new Date().toLocaleString();
+
+                await push(transactionsRef, { type: purchasedItemsText, amount: -totalAmount, timestamp });
+                await push(transactionsRefEn, { type: purchasedItemsTextEn, amount: -totalAmount, timestamp });
+
+                // 更新購物車顯示
+                const balanceElement = document.querySelector('.cart-balance');
+                balanceElement.style.display = 'block';
+                balanceElement.innerHTML = `
+                    <strong>${translations.originalBalance || "原本餘額"}: $${originalBalance}</strong><br>
+                    <strong>${translations.purchasedItems || "購買項目"}:</strong><br>${purchasedItemsText}<br>
+                    <strong>${translations.currentBalance || "目前餘額"}: $${updatedBalance}</strong>
+                `;
+
+                clearCart();
+                showToast(translations.purchaseSuccess || "購買成功！");
+                updateCartSidebar();
+
+
+                // 語音播報
+                speak(
+                    lang === "zh-TW"
+                        ? `原本餘額: ${originalBalance} 元。購買項目: ${purchasedItemsText}。目前餘額: ${updatedBalance} 元。`
+                        : `Original balance: ${originalBalance}. Purchased items: ${purchasedItemsTextEn}. Current balance: ${updatedBalance}.`
+                );
+            } catch (error) {
+                console.error("結帳失敗：", error.message || error);
+                showToast(translations.checkoutFailed || "交易失敗！");
+            }
+        }
+
+
+        function clearCart() {
+            cartItems = [];
+            cartQuantity = 0;
+
+            const badge = document.querySelector('.cart-icon .badge');
+            if (badge) badge.remove();
+
+            updateCartSidebar();
+        }
+
+        document.addEventListener('click', (event) => {
+            const sidebar = document.querySelector('.cart-sidebar');
+            const cartIcon = document.querySelector('.cart-icon');
+            if (sidebar && !sidebar.contains(event.target) && !cartIcon.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // 10. 鍵盤輸入 RFID
+        document.addEventListener('keydown', async (e) => {
+            if (/^\d$/.test(e.key)) {
+                rfidBuffer += e.key;
+                if (timeout) clearTimeout(timeout);
+                timeout = setTimeout(() => (rfidBuffer = ""), 5000);
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const rfid = rfidBuffer.trim();
+                rfidBuffer = "";
+
+                if (!rfid) {
+                    showToast("未讀取到有效的 RFID 卡號！");
+                    return;
+                }
+                await handleCheckout(rfid);
+            }
+        });
+
+        // 11. 結帳入口(手動呼叫)
+        window.checkout = async function () {
+            // 範例：假設要用 "888888" 為卡號
+            const exampleRfid = "888888";
+            await handleCheckout(exampleRfid);
+        };
+
+        // 12. 多語言切換
+        function setLanguage(lang) {
+            localStorage.setItem('language', lang);
+            updateLanguage();
+            updateCartSidebar();
+        }
+
+        function updateLanguage() {
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+            if (!translations) return;
+
+            // 更新所有 data-i18n 的文字
+            document.querySelectorAll("[data-i18n]").forEach((el) => {
+                const keys = el.getAttribute("data-i18n").split(".");
+                let translation = translations;
+                keys.forEach((key) => {
+                    translation = translation[key];
+                });
+                if (translation) {
+                    el.textContent = translation;
+                }
+            });
+
+            // 更新切換按鈕顯示語言 (若需要)
+            const currentLangElement = document.querySelector("#languageDropdown span");
+            if (currentLangElement) {
+                currentLangElement.textContent = (lang === "zh-TW") ? "中文" : "English";
+            }
+        }
+
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        document.querySelector("#languageDropdown").addEventListener("click", () => {
+            const dropdown = document.querySelector(".dropdown");
+            dropdown.classList.toggle("open");
+            console.log("Dropdown toggled:", dropdown.classList.contains("open"));
+        });
+
+
+        // 更新切換按鈕顯示語言 (若需要)
+        const currentLangElement = document.querySelector("#languageDropfdown span");
+        if (currentLangElement) {
+            currentLangElement.textContent = (lang === "zh-TW") ? "中文" : "English";
+        }
+
+
+        // 暴露給 HTML onclick 使用
+        window.handleBuyButton = handleBuyButton;
+        window.toggleCartSidebar = toggleCartSidebar;
+        window.updateQuantity = updateQuantity;
+        window.setLanguage = setLanguage;
+    </script>
+
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <h1 data-i18n="header.title">美食街</h1>
+        <nav>
+            <a href="check-in.html" data-i18n="nav.checkIn">檢票出口</a>
+            <a href="top-up.html" data-i18n="nav.topUp">儲值</a>
+            <a href="balance.html" data-i18n="nav.balance">查詢餘額</a>
+
+            <!-- 語言切換按鈕 -->
+            <div class="dropdown" style="margin-left: 20px; position: relative;">
+                <button id="languageDropdown"
+                    style="background-color: #444; color: #fff; border: 1px solid #888; padding: 5px 10px; border-radius: 5px; cursor: pointer;"
+                    data-i18n="currentLang">
+                    Language
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#" onclick="setLanguage('zh-TW')">中文</a>
+                    <a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="product">
+            <img src="https://www.tkkinc.com.tw/upload/food/b65e48801219bb7eae9c4986aef8680fc.png" alt="商品圖片">
+            <h3 data-i18n="product.mediumDrink">中杯飲料</h3>
+            <p>$50</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '中杯飲料', 50)">加入購物車</button>
+        </div>
+        <div class="product">
+            <img src="https://media.zenfs.com/ko/babyou_nownews_com_883/d80749671da458f8fdf761491688f937" alt="商品圖片">
+            <h3 data-i18n="product.largeDrink">大杯飲料</h3>
+            <p>$70</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '大杯飲料', 70)">加入購物車</button>
+        </div>
+        <div class="product">
+            <img src="https://i1.momoshop.com.tw/1693092483/goodsimg/0009/159/583/9159583_R_m.webp" alt="商品圖片">
+            <h3 data-i18n="product.hotDog">美式熱狗</h3>
+            <p>$49</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '美式熱狗', 49)">加入購物車</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGltkJBxsrVCiBsfCwD5jbxqbka8PnzrC_ug&s"
+                alt="商品圖片">
+            <h3 data-i18n="product.hotDogBun">美式熱狗堡</h3>
+            <p>$79</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '美式熱狗堡', 79)">加入購物車</button>
+        </div>
+        <div class="product">
+            <img src="https://achingfoodie.tw/wp-content/uploads/20211205002431_98.jpg" alt="商品圖片">
+            <h3 data-i18n="product.chickenNuggets">麥克雞塊4塊</h3>
+            <p>$49</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '麥克雞塊4塊', 49)">加入購物車</button>
+        </div>
+        <div class="product">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXLE-T2rBJxNj3jY_AgSnJD8OBkxg_ZVggbw&s"
+                alt="商品圖片">
+            <h3 data-i18n="product.friedChickenWings">炸雞翅</h3>
+            <p>$49</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '炸雞翅', 49)">加入購物車</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4a-PCojK_jwdBJexoaOE7mEf_kmrT-nhIbQ&s"
+                alt="商品圖片">
+            <h3 data-i18n="product.spaghetti">義大利麵</h3>
+            <p>$159</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '義大利麵', 159)">加入購物車</button>
+        </div>
+        <div class="product">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdWhiaQ7UkKHnp7Aa7qlMOa3M1Iva2uJTNmg&s"
+                alt="商品圖片">
+            <h3 data-i18n="product.beefNoodles">牛肉麵</h3>
+            <p>$179</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '牛肉麵', 179)">加入購物車</button>
+        </div>
+    </div>
+
+    <!-- 購物車圖示 -->
+    <div class="cart-icon" onclick="toggleCartSidebar()">
+        <i class="fas fa-shopping-cart"></i>
+    </div>
+
+    <!-- 購物車側邊欄 -->
+    <div class="cart-sidebar">
+        <h2 data-i18n="cart">購物車</h2>
+        <div class="cart-items"></div>
+        <button class="checkout-btn" data-i18n="checkout" onclick="checkout()">結帳</button>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">檢票系統</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    .modal-circle {
+      width: 140px;
+      /* 調整寬度 */
+      height: 140px;
+      /* 調整高度，確保為正方形 */
+      border-radius: 50%;
+      /* 確保圓形 */
+      display: flex;
+      align-items: center;
+      /* 垂直置中 */
+      justify-content: center;
+      /* 水平置中 */
+      margin: 0 auto;
+      background-color: #f8f9fa;
+      cursor: pointer;
+      border: 2px solid #007bff;
+      font-size: 16px;
+      /* 調整字體大小 */
+      line-height: 1.2;
+      /* 確保多行文字間距適中 */
+      text-align: center;
+      /* 文字置中 */
+    }
+
+    .modal-circle:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    /* Swal 模態框內的佈局間距 */
+    .swal2-html-container .d-flex {
+      gap: 30px;
+      /* 增加選項間距 */
+      flex-wrap: wrap;
+      /* 讓選項自動換行 */
+    }
+
+    @media (max-width: 768px) {
+      .modal-circle {
+        width: 110px;
+        /* 手機尺寸縮小圈圈 */
+        height: 110px;
+        font-size: 14px;
+      }
+
+      .swal2-html-container .d-flex {
+        gap: 20px;
+        /* 小螢幕下縮小間距 */
+      }
+    }
+
+    /* 確保頁面內其他元素不影響 footer 的定位 */
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      /* 保證內容的佔位高度 */
+    }
+
+    /* Footer 固定樣式 */
+    .footer {
+      position: fixed;
+      /* 固定在視窗位置 */
+      bottom: 0;
+      /* 垂直位置設為最底部 */
+      width: 100%;
+      /* 寬度拉滿整個視窗 */
+      background-color: #343a40;
+      /* 深灰背景 */
+      color: white;
+      /* 白色文字 */
+      text-align: center;
+      /* 文字置中 */
+      padding: 10px 0;
+      /* 適當內距 */
+      z-index: 1000;
+      /* 保證不被其他內容遮擋 */
+    }
+
+    /* 頁面主要內容 */
+    .content {
+      padding-bottom: 50px;
+      /* 留出 footer 的高度空間，避免內容被遮住 */
+    }
+  </style>
+
+
+</head>
+
+<body>
+  <nav></nav>
+
+  <div class="container py-5">
+    <h1 class="text-center mb-4" data-i18n="pageTitle">檢票系統</h1>
+    <div class="alert alert-info text-center" id="promptMessage" data-i18n="promptMessage">
+      請讀取您的 RFID 卡片以進行檢票。
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, push, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
+      authDomain: "rfid-project-4f420.firebaseapp.com",
+      databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rfid-project-4f420",
+      storageBucket: "rfid-project-4f420.firebasestorage.app",
+      messagingSenderId: "572151111042",
+      appId: "1:572151111042:web:db65f49191f977d56d439b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const lang = localStorage.getItem("language") || "zh-TW";
+    const translations = window.translations || {};  // 從全局 translations 變數中獲取對應語言的翻譯
+
+
+    let rfidBuffer = "";
+    let timeout = null;
+
+    document.addEventListener("keydown", async (e) => {
+      if (/^\d$/.test(e.key)) {
+        rfidBuffer += e.key;
+
+        if (timeout) clearTimeout(timeout);
+        timeout = setTimeout(() => (rfidBuffer = ""), 5000);
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        const rfid = rfidBuffer.trim();
+        rfidBuffer = "";
+
+        // 取得當前語言
+        const savedLang = localStorage.getItem("language") || "zh-TW";
+
+
+
+        // 根據語言選擇翻譯
+        const langData = translations[savedLang];
+
+        // 如果 RFID 無效
+        if (!rfid) {
+          Swal.fire(langData.errorTitle, langData.invalidRFID, "error"); // 動態顯示翻譯內容
+          return;
+        }
+        const ticketRef = ref(database, `tickets/${rfid}`);
+        const recordRef = ref(database, `checkRecords/${rfid}`);
+
+        try {
+          const ticketSnapshot = await get(ticketRef);
+          const recordSnapshot = await get(recordRef);
+
+          const lang = localStorage.getItem("language") || "zh-TW"; // 从 localStorage 获取语言，默认为繁体中文
+
+          if (!ticketSnapshot.exists()) {
+            Swal.fire(
+              translations[lang].errorTitle, // 动态标题
+              translations[lang].noValidTicket, // 动态提示内容
+              "error"
+            );
+            return;
+          }
+
+          const ticketData = ticketSnapshot.val();
+          const allUsers = Object.values(ticketData).flatMap((ticket) => ticket.users || []);
+
+          if (allUsers.length === 0) {
+            Swal.fire(
+              translations[lang].errorTitle, // 动态标题
+              translations[lang].invalidTicketNoUser, // 动态提示内容
+              "error"
+            );
+            return;
+          }
+
+          if (recordSnapshot.exists()) {
+            const lang = localStorage.getItem('language') || 'zh-TW'; // 根據 localStorage 設定的語言來決定顯示哪個語言
+            const translations = window.translations || {}; // 從全局 translations 變數中獲取對應語言的翻譯
+
+            // 使用語言字典來動態替換
+            Swal.fire({
+              title: translations[lang].confirmTitle,  // 根據語言顯示標題
+              icon: "question",
+              html: `
+      <div class="d-flex justify-content-around">
+        <button id="leaveButton" class="btn btn-danger">${translations[lang].leaveButton}</button>  <!-- 動態顯示按鈕文字 -->
+        <button id="destinationButton" class="btn btn-primary">${translations[lang].destinationButton}</button>
+        <button id="cancelButton" class="btn btn-secondary">${translations[lang].cancelButton}</button>
+      </div>
+    `,
+              showConfirmButton: false,
+              allowOutsideClick: false,
+            });
+
+
+            // 綁定事件
+            document.getElementById("leaveButton").addEventListener("click", async () => {
+              await remove(ticketRef);
+              await remove(recordRef);
+              Swal.fire(langData.success, langData.leaveSuccess, "success"); // 動態顯示翻譯內容
+            });
+
+            document.getElementById("destinationButton").addEventListener("click", () => {
+              Swal.close();
+              openDestinationSelection(rfid, recordRef, ticketData);
+            });
+
+            document.getElementById("cancelButton").addEventListener("click", () => {
+              Swal.close();
+            });
+          } else {
+            // 第一次檢票
+            const userDetails = allUsers
+              .map((user, index) => {
+                // 确保 ticketType 正确，若不存在则提供默认值
+                const ticketType = typeof user.ticketType === "object"
+                  ? user.ticketType[lang] || (lang === "zh-TW" ? "未知票種" : "Unknown Ticket")
+                  : (lang === "zh-TW" ? "未知票種" : "Unknown Ticket");
+
+                return `${index + 1}. ${user.name} - ${ticketType} }`;
+              })
+              .join("<br>");
+
+            // 动态翻译标题和按钮
+            const title = translations[lang]?.ticketSuccessTitle || (lang === "zh-TW" ? "檢票成功" : "Check-in Successful");
+            const confirmButtonText = translations[lang]?.chooseDestinationButton || (lang === "zh-TW" ? "選擇目的地" : "Choose Destination");
+            const cancelButtonText = translations[lang]?.cancelButton || (lang === "zh-TW" ? "取消" : "Cancel");
+
+            // 显示 Swal.fire
+            Swal.fire({
+              title, // 使用动态标题
+              html: userDetails, // 用户详情
+              icon: "success",
+              showCancelButton: true,
+              confirmButtonText, // 使用动态确认按钮
+              cancelButtonText, // 使用动态取消按钮
+            }).then((result) => {
+              if (result.isConfirmed) {
+                openDestinationSelection(rfid, recordRef, ticketData);
+              }
+            });
+
+            // 记录进场
+            await push(recordRef, {
+              status: lang === "zh-TW" ? "入場" : "Check-in",
+              timestamp: new Date().toISOString(),
+              users: allUsers.map((user) => ({
+                name: user.name,
+                ticketPrice: user.ticketPrice,
+              })),
+            });
+
+          }
+        } catch (error) {
+          Swal.fire("錯誤", `檢票失敗：${error.message}`, "error");
+        }
+      }
+    });
+
+
+    function openDestinationSelection(rfid, recordRef, ticketData) {
+      // 定義翻譯字典
+      const translations = {
+        "zh-TW": {
+          title: "選擇您的目的地",
+          destinations: {
+            visitorCenter: "遊客中心",
+            foodCourt: "美食街",
+            rides: "遊樂設施",
+            customShop: "自訂商品專區",
+          },
+        },
+        "en": {
+          title: "Choose Your Destination",
+          destinations: {
+            visitorCenter: "Visitor Center",
+            foodCourt: "Food Court",
+            rides: "Rides",
+            customShop: "Custom Shop",
+          },
+        },
+      };
+
+      // 獲取當前語言
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      const langData = translations[savedLang]; // 根據語言獲取翻譯
+
+      // 動態顯示彈窗
+      Swal.fire({
+        title: langData.title,
+        html: `
+      <div class="d-flex justify-content-around">
+        <div class="modal-circle" id="visitorCenter">${langData.destinations.visitorCenter}</div>
+        <div class="modal-circle" id="foodCourt">${langData.destinations.foodCourt}</div>
+        <div class="modal-circle" id="rides">${langData.destinations.rides}</div>
+        <div class="modal-circle" id="customShop">${langData.destinations.customShop}</div>
+      </div>
+    `,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+      });
+
+      // 綁定按鈕事件
+      document.getElementById("visitorCenter").addEventListener("click", async () => {
+        const savedLang = localStorage.getItem('language') || 'zh-TW'; // 獲取當前語言
+        await updateDestination(rfid, langData.destinations.visitorCenter, recordRef);
+        window.location.href = `visitor_center.html?lang=${savedLang}`;
+      });
+
+
+      document.getElementById("foodCourt").addEventListener("click", async () => {
+        await updateDestination(rfid, langData.destinations.foodCourt, recordRef);
+        window.location.href = "food_court.html";
+      });
+
+      document.getElementById("rides").addEventListener("click", async () => {
+        await updateDestination(rfid, langData.destinations.rides, recordRef);
+        window.location.href = "rides.html";
+      });
+
+      document.getElementById("customShop").addEventListener("click", async () => {
+        await updateDestination(rfid, langData.destinations.customShop, recordRef);
+        window.location.href = "custom_shop.html";
+      });
+    }
+
+    function updateDestination(rfid, destination) {
+      console.log(`RFID: ${rfid}, Destination: ${destination}`);
+      // 在這裡進行其他操作，例如更新 UI 或記錄日誌
+    }
+
+
+  </script>
+
+  <script>
+    function loadTranslationFile(filePath, callback) {
+      const script = document.createElement('script');
+      script.src = filePath;
+      script.type = 'module';
+
+      // 動態加載後執行 callback
+      script.onload = () => callback();
+      script.onerror = () => console.error(`Failed to load ${filePath}`);
+      document.head.appendChild(script);
+    }
+
+    // 動態加載 i18n 文件
+    const page = location.pathname.split('/').pop().replace('.html', '');
+    const i18nFilePath = `./lang/check-in-i18n.js`; // 確保路徑正確
+
+    loadTranslationFile(i18nFilePath, () => {
+      import(`./${i18nFilePath}`).then(({ translations }) => {
+        window.translations = translations; // 將翻譯數據存入全局變數
+        initializePage();
+      });
+    });
+
+    // 初始化頁面
+    function initializePage() {
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      setLanguage(savedLang);
+    }
+
+    // 設置語言
+    function setLanguage(lang) {
+      if (!window.translations || !translations[lang]) {
+        console.error(`無法找到語言包或語言: ${lang}`);
+        localStorage.setItem('language', lang); // 儲存選擇的語言
+        location.reload(); // 重新加載頁面以應用新的語言
+
+        return;
+      }
+      // 更新翻譯內容
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新佔位符翻譯
+      const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+      placeholders.forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+
+      // 動態更新按鈕文字，例如新增購票人與刪除按鈕
+      const buttons = document.querySelectorAll('[data-i18n="addUserButton"], [data-i18n="removeButton"]');
+      buttons.forEach(button => {
+        const key = button.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          button.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新語言切換按鈕的文字
+      const currentLangElement = document.querySelector('[data-i18n="currentLang"]');
+      if (currentLangElement) {
+        currentLangElement.textContent = lang === 'zh-TW' ? '中文' : 'English';
+      } else {
+        console.warn('找不到語言切換按鈕');
+      }
+
+      // 更新導航欄的文字
+      const navItems = document.querySelectorAll('[data-i18n="buyTicket"], [data-i18n="topUp"], [data-i18n="checkIn"], [data-i18n="wallet"]');
+      navItems.forEach(item => {
+        const key = item.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          item.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新提示訊息
+      const promptMessage = document.getElementById('promptMessage');
+      if (translations[lang]['promptMessage']) {
+        promptMessage.textContent = translations[lang]['promptMessage'];
+      } else {
+        promptMessage.textContent = "提示翻譯缺失！";
+      }
+
+      // 保存語言到 localStorage
+      localStorage.setItem('language', lang);
+    }
+
+
+
+    // 初始化語言
+    document.addEventListener('DOMContentLoaded', () => {
+      const lang = localStorage.getItem("language") || "zh-TW"; // 預設為中文
+      setLanguageForPage(lang);  // 設置語言
+
+      // 根據語言更新頁面文字
+      const translations = i18n[lang];
+      const promptMessage = document.getElementById('promptMessage');
+      promptMessage.innerHTML = translations.promptMessage || "請讀取您的 RFID 卡片以進行檢票。";
+    });
+
+
+    async function loadTranslationFile(filePath) {
+      try {
+        const module = await import(filePath); // 加載翻譯模組
+        return module.translations;
+      } catch (error) {
+        console.error(`無法加載翻譯文件: ${filePath}`, error);
+        return null;
+      }
+    }
+
+    // 初始化翻譯
+    loadTranslationFile(i18nFilePath).then(translations => {
+      if (translations) {
+        window.translations = translations; // 將翻譯設置為全局變數
+        initializePage();
+      } else {
+        console.error('翻譯文件加載失敗');
+      }
+    });
+
+    function updateLanguageForNewElements(parentElement) {
+      const lang = localStorage.getItem("language") || "zh-TW";
+      const translations = window.translations || {};
+
+      // 更新翻譯內容
+      parentElement.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang] && translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新佔位符翻譯
+      parentElement.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang] && translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+    }
+
+
+  </script>
+
+  <!-- 引入共用 Navbar CSS -->
+  <link href="navbar/navbar.css" rel="stylesheet">
+  <script src="navbar/navbar.js"></script>
+
+</body>
+
+
+<footer class="footer">
+  <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
+  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw</p>
+</footer>
+
+
+</html>

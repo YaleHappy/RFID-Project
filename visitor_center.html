@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品展示區</title>
+
+    <!-- 載入 i18n 字典 -->
+    <script src="lang/visitor_center-i18n.js"></script>
+
+    <!-- 新增彈窗的 HTML -->
+    <div id="balanceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 data-i18n="modal.insufficientBalance">餘額不足</h2>
+            <a href="top-up.html">
+                <button data-i18n="modal.goTopUp">前往儲值</button>
+            </a>
+        </div>
+    </div>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        header {
+            background: linear-gradient(90deg, #333, #007BFF);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            font-size: 1.2rem;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .product {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+            width: 300px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .product:hover {
+            transform: scale(1.05);
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .product h3 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .product p {
+            color: #555;
+            margin: 10px 0;
+        }
+
+        .product button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .product button:hover {
+            background-color: #0056b3;
+        }
+
+        .cart-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .cart-icon:hover {
+            background-color: #0056b3;
+        }
+
+        .cart-icon i {
+            font-size: 24px;
+        }
+
+        .cart-icon .badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: red;
+            color: white;
+            font-size: 12px;
+            padding: 2px 5px;
+            border-radius: 50%;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .quantity-controls button {
+            background-color: #000000;
+            border: none;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .quantity-controls button:hover {
+            background-color: #bbb;
+            color: #000;
+        }
+
+        .quantity-controls input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -800px;
+            /* 預設隱藏 */
+            width: 400px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .cart-sidebar.open {
+            right: 0;
+            /* 加上 open 時顯示 */
+        }
+
+        .cart-sidebar h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .cart-sidebar .cart-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .cart-sidebar .cart-item span {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .cart-sidebar .checkout-btn {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .cart-sidebar .checkout-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .cart-item button {
+            margin-left: 15px;
+            padding: 5px 10px;
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .cart-item button:hover {
+            background-color: #ff2e00;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 15px;
+            color: #fcfbfb;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #00ffea;
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            /* 初始隱藏 */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            /* 背景半透明 */
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            color: #ff4c4c;
+        }
+
+        .modal-content button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .modal-content button:hover {
+            background-color: #0056b3;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+
+        .dropdown {
+            margin-left: 20px;
+            position: relative;
+        }
+
+        .dropdown button {
+            background-color: #444;
+            color: white;
+            border: 1px solid #888;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .dropdown button:hover {
+            background-color: #007BFF;
+            border-color: #0056b3;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            background: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+            
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .dropdown-menu a:hover {
+            background-color: #f1f1f1;
+            color: #007BFF;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 20px;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+        }
+
+        nav a,
+        .dropdown button {
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 1px;
+        }
+    </style>
+
+    <!-- 載入 Firebase & 主要邏輯 -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, get, update, push } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
+            authDomain: "rfid-project-4f420.firebaseapp.com",
+            databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "rfid-project-4f420",
+            storageBucket: "rfid-project-4f420.firebasestorage.app",
+            messagingSenderId: "572151111042",
+            appId: "1:572151111042:web:db65f49191f977d56d439b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        let cartItems = [];
+        let cartQuantity = 0;
+        let rfidBuffer = "";
+        let timeout = null;
+
+        function updateQuantity(input, delta) {
+            let currentValue = parseInt(input.value) || 1;
+            let newValue = currentValue + delta;
+            if (newValue < 1) newValue = 1;
+            input.value = newValue;
+        }
+
+        // 控制彈窗的顯示與隱藏
+        function showModal() {
+            const modal = document.getElementById("balanceModal");
+            modal.style.display = "block";
+        }
+        function closeModal() {
+            const modal = document.getElementById("balanceModal");
+            if (modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const modal = document.getElementById("balanceModal");
+            // 點擊背景關閉彈窗
+            if (modal) {
+                modal.addEventListener("click", (event) => {
+                    if (event.target === modal) {
+                        closeModal();
+                    }
+                });
+                const closeButton = modal.querySelector(".close");
+                if (closeButton) {
+                    closeButton.addEventListener("click", closeModal);
+                }
+            }
+
+            // 語言載入
+            const savedLang = localStorage.getItem("language") || "zh-TW";
+            setLanguage(savedLang);
+        });
+
+        function redirectToTopUp() {
+            window.location.href = "top-up.html";
+        }
+
+        function updateCart(icon, productName, quantity, price) {
+            cartQuantity += quantity;
+
+            const badge = icon.querySelector('.badge');
+            if (cartQuantity > 0) {
+                if (!badge) {
+                    const newBadge = document.createElement('div');
+                    newBadge.classList.add('badge');
+                    newBadge.textContent = cartQuantity;
+                    icon.appendChild(newBadge);
+                } else {
+                    badge.textContent = cartQuantity;
+                }
+            } else if (badge) {
+                badge.remove();
+            }
+
+            const lang = localStorage.getItem("language") || "zh-TW";
+
+            // 檢查是否已存在該商品
+            const existingItemIndex = cartItems.findIndex(item => item.originalName === productName);
+            if (existingItemIndex !== -1) {
+                cartItems[existingItemIndex].quantity += quantity;
+            } else {
+                cartItems.push({
+                    originalName: productName, // 保存原始名稱
+                    displayName: lang === "zh-TW"
+                        ? productName // 中文名稱
+                        : productNameTranslations[productName] || productName, // 英文名稱
+                    quantity,
+                    price,
+                });
+            }
+        }
+
+
+        function handleBuyButton(productElement, productName, price) {
+            const quantity = parseInt(productElement.querySelector('input').value);
+
+            // 1. 更新購物車資料
+            updateCart(document.querySelector('.cart-icon'), productName, quantity, price);
+
+            // 2. 更新購物車側邊欄(馬上看見最新內容)
+            updateCartSidebar();
+
+            // 3. 顯示 Toast 通知
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+            showToast(translations.addToCart || "已加入購物車");
+        }
+
+
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.classList.add('toast');
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => toast.classList.add('show'), 100);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+
+        function toggleCartSidebar() {
+            const sidebar = document.querySelector('.cart-sidebar');
+            sidebar.classList.toggle('open');
+            updateCartSidebar();
+        }
+        function updateCartSidebar() {
+            const sidebar = document.querySelector('.cart-sidebar');
+            const cartItemsList = sidebar.querySelector('.cart-items');
+            cartItemsList.innerHTML = ""; // 清空購物車內容
+
+            // 從本地緩存獲取語言
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+            let totalAmount = 0;
+
+            // 動態渲染購物車內容
+            cartItems.forEach((item, index) => {
+                const totalPrice = item.quantity * item.price;
+                totalAmount += totalPrice;
+
+                const cartItemElement = document.createElement('div');
+                cartItemElement.classList.add('cart-item');
+
+                // 動態顯示名稱
+                const itemName = lang === "zh-TW" ? item.originalName : productNameTranslations[item.originalName] || item.originalName;
+
+                const itemInfo = document.createElement('span');
+                itemInfo.textContent = `${itemName} - ${item.price} x ${item.quantity}`;
+
+                const itemTotal = document.createElement('span');
+                itemTotal.textContent = `${totalPrice}`;
+                itemTotal.style.textAlign = 'right';
+
+                // 動態刪除按鈕
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = lang === "zh-TW" ? "刪除" : "Remove"; // 根據語言設置文本
+                deleteButton.addEventListener('click', () => {
+                    removeCartItem(index);
+                    updateCartSidebar(); // 刪除後刷新
+                });
+
+                cartItemElement.appendChild(itemInfo);
+                cartItemElement.appendChild(itemTotal);
+                cartItemElement.appendChild(deleteButton);
+                cartItemsList.appendChild(cartItemElement);
+            });
+
+            // 總金額顯示
+            const totalElement = document.createElement('div');
+            totalElement.classList.add('cart-total');
+            totalElement.innerHTML = `<strong>${translations.cartTotal || "總金額"}: ${totalAmount}</strong>`;
+            cartItemsList.appendChild(totalElement);
+
+            // 動態提示
+            let tipsElement = sidebar.querySelector('.cart-tips');
+            if (!tipsElement) {
+                tipsElement = document.createElement('div');
+                tipsElement.classList.add('cart-tips');
+                sidebar.appendChild(tipsElement);
+            }
+            tipsElement.innerHTML = `<em>${translations.cartTips || "提示: 請使用您的卡片完成結帳。"}</em>`;
+
+
+
+            // 餘額顯示 (初始隱藏)
+            const balanceElement = document.querySelector('.cart-balance');
+            if (!balanceElement) {
+                const newBalanceElement = document.createElement('div');
+                newBalanceElement.classList.add('cart-balance');
+                newBalanceElement.style.textAlign = 'center';
+                newBalanceElement.style.marginTop = '10px';
+                newBalanceElement.style.fontWeight = 'bold';
+                newBalanceElement.style.display = 'none';
+                sidebar.appendChild(newBalanceElement);
+            }
+        }
+
+
+        function removeCartItem(index) {
+            cartQuantity -= cartItems[index].quantity;
+            cartItems.splice(index, 1);
+
+            const badge = document.querySelector('.cart-icon .badge');
+            if (cartQuantity > 0) badge.textContent = cartQuantity;
+            else if (badge) badge.remove();
+
+            updateCartSidebar();
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                speechSynthesis.cancel(); // 先清除先前可能排隊的朗讀
+                const lang = localStorage.getItem("language") || "zh-TW";
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = lang === "zh-TW" ? "zh-TW" : "en-US";
+                utterance.rate = 1.0; // 可以調整語速
+                speechSynthesis.speak(utterance);
+            } else {
+                console.warn("語音合成不支援於此瀏覽器！");
+            }
+        }
+
+
+
+
+        async function handleCheckout(rfid) {
+            const balanceRef = ref(database, `balances/${rfid}`);
+            const transactionsRef = ref(database, `transactions/${rfid}`);
+            const transactionsRefEn = ref(database, `transactions-en/${rfid}`);
+            const totalAmount = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+
+            if (cartItems.length === 0) {
+                showToast(translations.cartEmpty || "購物車內沒有東西!");
+                return;
+            }
+
+            try {
+                // 讀取餘額
+                const balanceSnapshot = await get(balanceRef);
+                if (!balanceSnapshot.exists()) {
+                    showToast(translations.cardNotRegistered || "卡片未註冊");
+                    return;
+                }
+
+                const originalBalance = parseFloat(balanceSnapshot.val().balance || balanceSnapshot.val());
+                if (originalBalance < totalAmount) {
+                    showModal();
+                    return;
+                }
+
+                const updatedBalance = originalBalance - totalAmount;
+
+                // 更新餘額
+                await update(balanceRef, { balance: updatedBalance });
+
+                // 生成購買項目
+                const purchasedItemsText = cartItems
+                    .map(item => `${item.originalName} x${item.quantity}`)
+                    .join(", ");
+                const purchasedItemsTextEn = cartItems
+                    .map(item => `${productNameTranslations[item.originalName] || item.originalName} x${item.quantity}`)
+                    .join(", ");
+                const timestamp = new Date().toLocaleString();
+
+                // 存儲到資料庫
+                await push(transactionsRef, { type: purchasedItemsText, amount: -totalAmount, timestamp });
+                await push(transactionsRefEn, { type: purchasedItemsTextEn, amount: -totalAmount, timestamp });
+
+                // 更新購物車顯示
+                const balanceElement = document.querySelector('.cart-balance');
+                balanceElement.style.display = 'block';
+                balanceElement.innerHTML = `
+            <strong>${translations.originalBalance || "原本餘額"}: $${originalBalance}</strong><br>
+            <strong>${translations.purchasedItems || "購買項目"}:</strong><br>${purchasedItemsText}<br>
+            <strong>${translations.currentBalance || "目前餘額"}: $${updatedBalance}</strong>
+        `;
+
+                // 清空購物車並更新側邊欄
+                clearCart();
+                showToast(translations.purchaseSuccess || "購買成功！");
+                updateCartSidebar();
+
+                // 語音播報
+                speak(
+                    lang === "zh-TW"
+                        ? `原本餘額: ${originalBalance} 元。購買項目: ${purchasedItemsText}。目前餘額: ${updatedBalance} 元。`
+                        : `Original balance: ${originalBalance}. Purchased items: ${purchasedItemsTextEn}. Current balance: ${updatedBalance}.`
+                );
+            } catch (error) {
+                console.error("結帳失敗：", error.message || error);
+                showToast(translations.checkoutFailed || "交易失敗！");
+            }
+        }
+
+
+
+
+        function clearCart() {
+            cartItems = [];
+            cartQuantity = 0;
+
+            const badge = document.querySelector('.cart-icon .badge');
+            if (badge) badge.remove();
+
+            updateCartSidebar();
+        }
+
+        document.addEventListener('click', (event) => {
+            const sidebar = document.querySelector('.cart-sidebar');
+            const cartIcon = document.querySelector('.cart-icon');
+            if (sidebar && !sidebar.contains(event.target) && !cartIcon.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        document.addEventListener('keydown', async (e) => {
+            if (/^\d$/.test(e.key)) {
+                rfidBuffer += e.key;
+                if (timeout) clearTimeout(timeout);
+                timeout = setTimeout(() => (rfidBuffer = ""), 5000);
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const rfid = rfidBuffer.trim();
+                rfidBuffer = "";
+
+                if (!rfid) {
+                    showToast("未讀取到有效的 RFID 卡號！");
+                    return;
+                }
+                await handleCheckout(rfid);
+            }
+        });
+
+        // 結帳入口
+        window.checkout = async function () {
+            // 根據實際需求，這裡可從輸入框或 RFID掃描器獲取卡號
+            const exampleRfid = "888888";
+            await handleCheckout(exampleRfid);
+        };
+
+        // === 多語言切換 ===
+        function setLanguage(lang) {
+            localStorage.setItem('language', lang);
+            updateLanguage(); // 更新所有帶有 data-i18n 的元素
+            updateCartSidebar(); // 更新購物車側邊欄
+            updatePurchasedItemsText(); // 更新購買項目內容
+        }
+
+
+        function updateLanguage() {
+            const lang = localStorage.getItem("language") || "zh-TW";
+            const translations = i18n[lang];
+            if (!translations) return;
+
+            // 更新所有 data-i18n 的文字
+            document.querySelectorAll("[data-i18n]").forEach((el) => {
+                const keys = el.getAttribute("data-i18n").split(".");
+                let translation = translations;
+                keys.forEach((key) => {
+                    translation = translation[key];
+                });
+                if (translation) {
+                    el.textContent = translation;
+                }
+            });
+
+            // 更新購物車側邊欄
+            updateCartSidebar();
+
+
+            // 更新切換按鈕顯示語言 (若需要)
+            const currentLangElement = document.querySelector("#languageDropdown span");
+            if (currentLangElement) {
+                currentLangElement.textContent = (lang === "zh-TW") ? "中文" : "English";
+            }
+        }
+
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // 優先從 URL 參數獲取語言，若無則使用 localStorage
+            const langParam = getUrlParameter("language");
+            const lang = langParam || localStorage.getItem("language") || "zh-TW";
+
+            // 將語言保存到 localStorage，方便下次使用
+            localStorage.setItem('lang', lang); // 儲存選擇的語言
+
+            // 更新頁面語言
+        });
+
+
+        // 暴露給 HTML onclick 使用
+        window.handleBuyButton = handleBuyButton;
+        window.toggleCartSidebar = toggleCartSidebar;
+        window.updateQuantity = updateQuantity;
+        window.setLanguage = setLanguage;
+    </script>
+
+    <!-- font-awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <h1 data-i18n="header.title">遊客中心</h1>
+        <nav style="position: absolute; top: 15px; right: 20px; display: flex; align-items: center;">
+            <a href="check-in.html" data-i18n="nav.checkIn"
+                style="margin-right: 15px; text-decoration: none; font-weight: bold; color:#fcfbfb;">
+                檢票出口
+            </a>
+            <a href="top-up.html" data-i18n="nav.topUp"
+                style="margin-right: 15px; text-decoration: none; font-weight: bold; color:#fcfbfb;">
+                儲值
+            </a>
+            <a href="balance.html" data-i18n="nav.balance"
+                style="text-decoration: none; font-weight: bold; color:#fcfbfb;">
+                查詢餘額
+            </a>
+
+            <!-- 語言切換按鈕 -->
+            <div class="dropdown" style="margin-left: 20px;">
+                <button class="btn btn-language dropdown-toggle d-flex align-items-center" type="button"
+                    id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                    style="background-color: transparent; border: none; color: white; cursor: pointer; font-size: 1rem;">
+                    <i class="fas fa-globe me-2" style="font-size: 1.2rem;"></i>
+                    <span data-i18n="currentLang">Language</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                    <li><a class="dropdown-item" onclick="setLanguage('zh-TW')">中文</a></li>
+                    <li><a class="dropdown-item" onclick="setLanguage('en')">English</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="product">
+            <img src="https://gw.alicdn.com/imgextra/i2/1794692941/O1CN01qurNND1Xb1pLC8oxO_!!2-item_pic.png_.webp"
+                alt="商品圖片">
+            <h3 data-i18n="product.mascotDoll">吉祥物公仔</h3>
+            <p>$150</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '吉祥物公仔', 150)">加入購物車</button>
+        </div>
+
+        <div class="product">
+            <img src="https://down-tw.img.susercontent.com/file/sg-11134201-22120-za678ya9l0kvc0" alt="商品圖片">
+            <h3 data-i18n="product.bumperCarKeychain">碰碰車吊飾</h3>
+            <p>$170</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '碰碰車吊飾', 170)">加入購物車</button>
+        </div>
+
+        <div class="product">
+            <img src="https://i5.momoshop.com.tw/1723030144/goodsimg/TP000/2750/0001/108/TP00027500001108_R_m.jpg"
+                alt="商品圖片">
+            <h3 data-i18n="product.coffeeCup">旋轉咖啡杯</h3>
+            <p>$170</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '旋轉咖啡杯', 170)">加入購物車</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product">
+            <img src="https://creativepark.canon/images/contents/CNT-0010362/CNT-0010362_detail-01_s@2x.jpg" alt="商品圖片">
+            <h3 data-i18n="product.carousel">旋轉木馬</h3>
+            <p>$220</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '旋轉木馬', 220)">加入購物車</button>
+        </div>
+
+        <div class="product">
+            <img src="https://i1.momoshop.com.tw/1727845647/goodsimg/0013/267/252/13267252_O_m.webp" alt="商品圖片">
+            <h3 data-i18n="product.pirateShip">海盜船</h3>
+            <p>$320</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '海盜船', 320)">加入購物車</button>
+        </div>
+
+        <div class="product">
+            <img src="https://m.media-amazon.com/images/I/81fKdgBXnpL.jpg" alt="商品圖片">
+            <h3 data-i18n="product.ferrisWheel">摩天輪</h3>
+            <p>$370</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '摩天輪', 370)">加入購物車</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="product">
+            <img src="https://www.tienlystore.com/File/Image/1a4799c3-8993-4cad-86d3-9dfc62055aeb?index=3" alt="商品圖片">
+            <h3 data-i18n="product.rollerCoaster">雲霄飛車</h3>
+            <p>$450</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '雲霄飛車', 450)">加入購物車</button>
+        </div>
+
+        <div class="product">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Republic_Of_Korea_Broadcasting-TV_Rating_System%28ALL%29.svg/1200px-Republic_Of_Korea_Broadcasting-TV_Rating_System%28ALL%29.svg.png"
+                alt="商品圖片">
+            <h3 data-i18n="product.fullSet">整組兌換</h3>
+            <p>$1500</p>
+            <div class="quantity-controls">
+                <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
+                <input type="text" value="1" readonly>
+                <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
+            </div>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '整組兌換', 1500)">加入購物車</button>
+        </div>
+    </div>
+
+    <!-- 購物車圖示 -->
+    <div class="cart-icon" onclick="toggleCartSidebar()">
+        <i class="fas fa-shopping-cart"></i>
+    </div>
+
+    <!-- 購物車側邊欄 -->
+    <div class="cart-sidebar">
+        <h2 data-i18n="cart">購物車</h2>
+        <div class="cart-items"></div>
+        <button class="checkout-btn" data-i18n="checkout" onclick="checkout()">結帳</button>
+    </div>
+
+</body>
+
+</html>

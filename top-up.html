@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pagetitle">儲值系統</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    #totalAmount {
+      font-size: 1.8em;
+      /* 放大字體 */
+      font-weight: bold;
+      /* 加粗字體 */
+      margin-top: 10px;
+      /* 增加與標題的間距 */
+      display: block;
+      /* 將其作為塊級元素顯示 */
+
+
+    }
+
+/* 確保頁面內其他元素不影響 footer 的定位 */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%; /* 保證內容的佔位高度 */
+}
+
+/* Footer 固定樣式 */
+.footer {
+  position: fixed; /* 固定在視窗位置 */
+  bottom: 0; /* 垂直位置設為最底部 */
+  width: 100%; /* 寬度拉滿整個視窗 */
+  background-color: #343a40; /* 深灰背景 */
+  color: white; /* 白色文字 */
+  text-align: center; /* 文字置中 */
+  padding: 10px 0; /* 適當內距 */
+  z-index: 1000; /* 保證不被其他內容遮擋 */
+}
+
+/* 頁面主要內容 */
+.content {
+  padding-bottom: 50px; /* 留出 footer 的高度空間，避免內容被遮住 */
+}
+  </style>
+</head>
+
+<body>
+
+  <!-- 頂部導航 -->
+  <nav></nav>
+
+  <!-- 儲值區 -->
+  <div class="container py-5">
+    <h1 class="text-center mb-4" data-i18n="pagetitle">儲值系統</h1>
+    <div class="alert alert-info text-center" id="promptMessage" data-i18n="promptMessage">
+      請讀取您的 RFID 卡片以進行儲值。
+    </div>
+
+    <!-- 快速選擇儲值金額 -->
+    <div class="mb-3">
+      <label class="form-label" data-i18n="quickSelectAmount">快速選擇儲值金額</label>
+      <div class="d-flex justify-content-center">
+        <button type="button" class="btn btn-outline-primary mx-2 preset-amount" data-amount="100">$100</button>
+        <button type="button" class="btn btn-outline-primary mx-2 preset-amount" data-amount="200">$200</button>
+        <button type="button" class="btn btn-outline-primary mx-2 preset-amount" data-amount="500">$500</button>
+        <button type="button" class="btn btn-outline-primary mx-2 preset-amount" data-amount="1000">$1000</button>
+      </div>
+    </div>
+
+    <!-- 自訂儲值金額 -->
+    <div class="mb-3">
+      <label for="customAmount" class="form-label" data-i18n="customAmount">自訂金額</label>
+      <input type="number" id="customAmount" class="form-control" data-i18n-placeholder="customAmountPlaceholder"
+        placeholder="輸入自訂金額">
+    </div>
+
+    <!-- 按鈕區域 -->
+    <div class="text-center">
+      <button id="clearRFID" class="btn btn-danger mx-2" data-i18n="clearRFID">清空 RFID</button>
+      <button id="confirmTopUp" class="btn btn-success mx-2" disabled data-i18n="confirmTopUp">確定儲值</button>
+    </div>
+
+    <!-- 顯示累計金額 -->
+    <div class="text-center mt-4">
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <h3 data-i18n="currentTotal">目前累計金額：</h3>
+        <span id="totalAmount" style="font-size: 2em; font-weight: bold;">$0</span>
+      </div>
+    </div>
+    <div id="successMessage" class="alert alert-success text-center d-none" data-i18n="successMessage" role="alert">
+      儲值成功！資料已更新。
+    </div>
+    <div id="errorMessage" class="alert alert-danger text-center d-none" data-i18n="errorMessage" role="alert">
+      儲值失敗！請重試。
+    </div>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import { getDatabase, ref, get, update, push } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
+      authDomain: "rfid-project-4f420.firebaseapp.com",
+      databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rfid-project-4f420",
+      storageBucket: "rfid-project-4f420.firebasestorage.app",
+      messagingSenderId: "572151111042",
+      appId: "1:572151111042:web:db65f49191f977d56d439b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+
+    let rfid = "";
+    let totalAmount = 0;
+
+    const totalAmountDisplay = document.getElementById("totalAmount");
+    const confirmTopUpButton = document.getElementById("confirmTopUp");
+    const clearRFIDButton = document.getElementById("clearRFID");
+
+
+    // 快速選擇金額按鈕
+    document.querySelectorAll(".preset-amount").forEach((button) => {
+      button.addEventListener("click", () => {
+        totalAmount = parseInt(button.getAttribute("data-amount"), 10);
+        totalAmountDisplay.textContent = `$${totalAmount}`;
+      });
+    });
+
+    // 自訂金額輸入
+    const customAmountInput = document.getElementById("customAmount");
+    customAmountInput.addEventListener("input", (e) => {
+      if (document.activeElement === customAmountInput) {
+        totalAmount = parseInt(e.target.value, 10) || 0;
+        totalAmountDisplay.textContent = `$${totalAmount}`;
+      }
+    });
+
+    // RFID 卡片讀取邏輯
+    document.addEventListener("keydown", (e) => {
+      if (document.activeElement === customAmountInput) return;
+
+      if (/^\d$/.test(e.key)) {
+        rfid += e.key;
+
+        // 根據語言更新提示
+        const lang = localStorage.getItem("language") || "zh-TW"; // 取得當前語言
+        const message = lang === "en" ? `Card read successfully: ${rfid}` : `卡號讀取成功：${rfid}`;
+
+        document.getElementById("promptMessage").textContent = message;
+
+        confirmTopUpButton.disabled = false; // 啟用儲值按鈕
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+      }
+    });
+
+
+    // 清空 RFID
+    clearRFIDButton.addEventListener("click", () => {
+      rfid = "";
+      totalAmount = 0;
+      totalAmountDisplay.textContent = `$0`;
+      confirmTopUpButton.disabled = true; // 禁用儲值按鈕
+      document.getElementById("promptMessage").textContent = "請讀取您的 RFID 卡片以進行儲值。";
+    });
+
+    // 確定儲值邏輯
+    confirmTopUpButton.addEventListener("click", async () => {
+      const lang = localStorage.getItem("language") || "zh-TW"; // 從 localStorage 取得當前語言，默認為中文
+
+      if (!rfid) {
+        const message = lang === "en" ? "Please scan your RFID card first!" : "請先感應 RFID 卡片！";
+        alert(message);
+        return;
+      }
+
+      if (totalAmount <= 0) {
+        const message = lang === "en" ? "Please select or enter the top-up amount!" : "請選擇或輸入儲值金額！";
+        alert(message);
+        return;
+      }
+
+      const balanceRef = ref(database, `balances/${rfid}`);
+      const transactionsRef = ref(database, `transactions/${rfid}`);
+      const transactions1Ref = ref(database, `transactions-en/${rfid}`);
+
+      try {
+        const balanceSnapshot = await get(balanceRef);
+        let balance = 0;
+
+        if (balanceSnapshot.exists()) {
+          balance = balanceSnapshot.val().balance || 0;
+        }
+
+        const newBalance = balance + totalAmount;
+
+        // 更新 Firebase
+        await update(balanceRef, { balance: newBalance });
+
+        const transaction = {
+          type: "儲值", // 中文
+          amount: totalAmount,
+          timestamp: new Date().toLocaleString(), // 本地時間
+
+        };
+
+        const transactionEn = {
+          type: "Top-Up", // 英文翻譯
+          amount: totalAmount,
+          timestamp: new Date().toLocaleString(), // 本地時間
+        };
+
+        // 將交易記錄存入中文和英文節點
+        await push(transactionsRef, transaction);
+        await push(transactions1Ref, transactionEn);
+
+        // 顯示成功訊息
+        document.getElementById("successMessage").classList.remove("d-none");
+        document.getElementById("errorMessage").classList.add("d-none");
+
+        // 重置金額
+        totalAmount = 0;
+        totalAmountDisplay.textContent = `$0`;
+      } catch (error) {
+        console.error("儲值失敗：", error);
+
+        // 顯示失敗訊息
+        document.getElementById("errorMessage").classList.remove("d-none");
+        document.getElementById("successMessage").classList.add("d-none");
+      }
+
+    });
+  </script>
+
+  <script>
+    function loadTranslationFile(filePath, callback) {
+      const script = document.createElement('script');
+      script.src = filePath;
+      script.type = 'module';
+
+      // 動態加載後執行 callback
+      script.onload = () => callback();
+      script.onerror = () => console.error(`Failed to load ${filePath}`);
+      document.head.appendChild(script);
+    }
+
+    // 動態加載 i18n 文件
+    const page = location.pathname.split('/').pop().replace('.html', '');
+    const i18nFilePath = `./lang/top-up-i18n.js`; // 確保路徑正確
+
+    loadTranslationFile(i18nFilePath, () => {
+      import(`./${i18nFilePath}`).then(({ translations }) => {
+        window.translations = translations; // 將翻譯數據存入全局變數
+        initializePage();
+      });
+    });
+
+    // 初始化頁面
+    function initializePage() {
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      setLanguage(savedLang);
+    }
+
+    // 設置語言
+    function setLanguage(lang) {
+      if (!window.translations || !translations[lang]) {
+        console.error(`無法找到語言包或語言: ${lang}`);
+        return;
+      }
+      // 更新翻譯內容
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新佔位符翻譯
+      const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
+      placeholders.forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (translations[lang][key]) {
+          el.placeholder = translations[lang][key];
+        }
+      });
+
+      // 動態更新按鈕文字，例如新增購票人與刪除按鈕
+      const buttons = document.querySelectorAll('[data-i18n="addUserButton"], [data-i18n="removeButton"]');
+      buttons.forEach(button => {
+        const key = button.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          button.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新語言切換按鈕的文字
+      const currentLangElement = document.querySelector('[data-i18n="currentLang"]');
+      if (currentLangElement) {
+        currentLangElement.textContent = lang === 'zh-TW' ? '中文' : 'English';
+      } else {
+        console.warn('找不到語言切換按鈕');
+      }
+
+      // 更新導航欄的文字
+      const navItems = document.querySelectorAll('[data-i18n="buyTicket"], [data-i18n="topUp"], [data-i18n="checkIn"], [data-i18n="wallet"]');
+      navItems.forEach(item => {
+        const key = item.getAttribute('data-i18n');
+        if (translations[lang][key]) {
+          item.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新提示訊息
+      const promptMessage = document.getElementById('promptMessage');
+      if (translations[lang]['promptMessage']) {
+        promptMessage.textContent = translations[lang]['promptMessage'];
+      } else {
+        promptMessage.textContent = "提示翻譯缺失！";
+      }
+
+      // 保存語言到 localStorage
+      localStorage.setItem('language', lang);
+    }
+
+
+
+    // 初始化語言
+    document.addEventListener("DOMContentLoaded", () => {
+      const promptMessage = document.getElementById("promptMessage");
+      const clearRFIDButton = document.getElementById("clearRFID");
+      const confirmTopUpButton = document.getElementById("confirmTopUp");
+      const totalAmountDisplay = document.getElementById("totalAmount");
+
+      // 定義多語言提示信息
+      const messages = {
+        "zh-TW": {
+          prompt: "請讀取您的 RFID 卡片以進行儲值。",
+          cleared: "卡號已清空。",
+        },
+        "en": {
+          prompt: "Please scan your RFID card to proceed with top-up.",
+          cleared: "Card ID cleared.",
+        },
+      };
+
+      // 根據語言更新提示信息
+      function updatePromptMessage() {
+        const lang = localStorage.getItem("language") || "zh-TW";
+        promptMessage.textContent = messages[lang].prompt;
+      }
+
+      // 初始化提示信息
+      updatePromptMessage();
+
+      // 清空 RFID 按鈕邏輯
+      clearRFIDButton.addEventListener("click", () => {
+        rfid = "";
+        totalAmount = 0;
+        totalAmountDisplay.textContent = `$0`;
+        confirmTopUpButton.disabled = true; // 禁用儲值按鈕
+        updatePromptMessage(); // 更新提示信息
+      });
+
+      // 語言切換功能（假設已有切換語言邏輯）
+      function setLanguage(lang) {
+        if (!messages[lang]) {
+          console.error(`無法找到語言包: ${lang}`);
+          return;
+        }
+        localStorage.setItem("language", lang);
+        updatePromptMessage();
+
+        // 更新其他相關內容（例如導航、佔位符等）
+        const customAmountInput = document.getElementById("customAmount");
+        const placeholders = {
+          "zh-TW": "輸入自訂金額",
+          "en": "Enter custom amount",
+        };
+        if (customAmountInput) {
+          customAmountInput.placeholder = placeholders[lang];
+        }
+      }
+
+      // 假設有一個語言切換按鈕，這裡模擬語言切換：
+      document.getElementById("switchToEnglish").addEventListener("click", () => {
+        setLanguage("en");
+      });
+      document.getElementById("switchToChinese").addEventListener("click", () => {
+        setLanguage("zh-TW");
+      });
+    });
+
+
+
+  </script>
+
+  <!-- 引入共用 Navbar CSS -->
+  <link href="navbar/navbar.css" rel="stylesheet">
+  <script src="navbar/navbar.js"></script>
+
+
+</body>
+
+
+<footer class="footer">
+  <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
+  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw</p>
+</footer>
+
+</html>

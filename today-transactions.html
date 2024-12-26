@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="pagetitle">多日交易紀錄查詢</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- 引入 Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <style>
+    /* Navbar 樣式 */
+    .navbar {
+      background-color: #ffcc00;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* 左右兩側均勻分佈 */
+    }
+
+    /* 網站名稱樣式 */
+    .navbar-brand {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+      white-space: nowrap; /* 防止文字換行 */
+      margin-right: auto; /* 確保名稱靠左 */
+    }
+
+    /* 導航鏈接樣式 */
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px; /* 調整導航項目之間的間距 */
+    }
+
+    .navbar-nav .nav-link {
+      color: #333;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ff4500;
+    }
+
+    /* 語言切換按鈕樣式 */
+    .language-switch {
+      display: flex;
+      gap: 10px; /* 調整按鈕之間的間距 */
+    }
+
+    .btn-language {
+      background-color: #ffcc00;
+      color: #333;
+      border: none;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-language:hover {
+      background-color: #ff9900;
+      color: #fff;
+    }
+
+    /* 下拉菜單樣式 */
+    .dropdown-menu {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-menu .dropdown-item {
+      font-weight: bold;
+      color: #333;
+      padding: 10px 15px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+      background-color: #ffcc00;
+      color: #fff;
+    }
+
+    .btn-language.active {
+      background-color: #ff9900;
+      color: #fff;
+    }
+
+    /* 響應式設計 */
+    @media (max-width: 768px) {
+      .navbar .container {
+          flex-wrap: wrap;
+      }
+
+      /* 語言切換按鈕樣式 */
+      .language-switch {
+        display: flex;
+        gap: 10px; /* 按鈕之間的間距 */
+        margin-left: auto; /* 自動將語言按鈕推到最右側 */
+        align-items: center; /* 保持垂直對齊 */
+      }
+    }
+
+    /* 餘額顯示區域 */
+    .balance-display {
+      position: fixed;
+      top: 80px; /* 根據 Navbar 的高度調整 */
+      right: 20px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: opacity 0.3s;
+    }
+
+    .balance-display h5 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .balance-display p {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #007bff;
+    }
+
+    /* 交易表格樣式 */
+    .table {
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .table th, .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #fffae6;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <!-- 網站名稱 -->
+      <a class="navbar-brand" href="index.html" data-i18n="title">Ambisa Amusement Park</a>
+
+      <!-- 導航按鈕 -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="buy-ticket.html" data-i18n="buyTicket">Buy Ticket</a></li>
+          <li class="nav-item"><a class="nav-link" href="top-up.html" data-i18n="topUp">Top Up</a></li>
+          <li class="nav-item"><a class="nav-link" href="check-in.html" data-i18n="checkIn">Check In</a></li>
+          <li class="nav-item"><a class="nav-link" href="balance.html" data-i18n="wallet">E-Wallet</a></li>
+        </ul>
+      </div>
+
+      <!-- 語言切換按鈕 -->
+      <div class="dropdown">
+        <button class="btn btn-language dropdown-toggle d-flex align-items-center" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-globe me-2"></i> <!-- 全球圖標 -->
+          <span data-i18n="currentLang">Language</span> <!-- 顯示當前語言 -->
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+          <li><a class="dropdown-item" onclick="setLanguage('zh-TW')">中文</a></li>
+          <li><a class="dropdown-item" onclick="setLanguage('en')">English</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 餘額顯示區域 -->
+  <div class="balance-display d-none" id="balanceDisplay">
+    <h5 data-i18n="balanceLabel">餘額</h5>
+    <p id="balanceAmount" data-i18n="balancePlaceholder">$0.00</p>
+  </div>
+
+  <div class="container mt-5">
+    <div class="card shadow">
+      <div class="card-body">
+        <h1 class="text-center mb-4" data-i18n="searchTransactions">多日交易紀錄查詢</h1>
+
+        <!-- RFID 輸入 -->
+        <div class="mb-3">
+          <label for="rfidInput" class="form-label" data-i18n="rfidLabel">請輸入/刷卡後取得 RFID</label>
+          <input type="text" id="rfidInput" class="form-control" placeholder="例如 1234567890" data-i18n-placeholder="rfidPlaceholder" />
+        </div>
+
+        <!-- 日期範圍選擇 -->
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="startDate" class="form-label" data-i18n="startDateLabel">起始日期</label>
+            <input type="date" id="startDate" class="form-control" />
+          </div>
+          <div class="col-md-6">
+            <label for="endDate" class="form-label" data-i18n="endDateLabel">結束日期</label>
+            <input type="date" id="endDate" class="form-control" />
+          </div>
+        </div>
+
+        <button id="searchBtn" class="btn btn-primary w-100" data-i18n="searchTransactions">搜尋交易紀錄</button>
+      </div>
+    </div>
+
+    <!-- 顯示查詢結果 -->
+    <div class="mt-5">
+      <h2 id="selectedDateTitle" class="text-center text-secondary" data-i18n="dateRangeTitle">日期範圍：</h2>
+      <div class="card">
+        <div class="card-body">
+          <table class="table table-striped table-hover table-responsive">
+            <thead class="table-dark">
+              <tr>
+                <th data-i18n="transactionType">交易類型</th>
+                <th data-i18n="amount">金額</th>
+                <th data-i18n="time">時間</th>
+              </tr>
+            </thead>
+            <tbody id="transactionList">
+              <tr><td colspan="3" class="text-center" data-i18n="noQuery">請選擇條件進行查詢</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase & 主要程式 (單一 script) -->
+  <script type="module">
+    // ------------------------
+    // 1) 匯入 Firebase / i18n
+    // ------------------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      off
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { translations } from "./lang/today-transactions-i18n.js";
+
+    // ---------------------------------------------
+    // 2) 你的 Firebase 設定（請改成有效的憑證）
+    // ---------------------------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
+      authDomain: "rfid-project-4f420.firebaseapp.com",
+      databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "rfid-project-4f420",
+      storageBucket: "rfid-project-4f420.appspot.com",
+      messagingSenderId: "572151111042",
+      appId: "1:572151111042:web:db65f49191f977d56d439b",
+    };
+
+    // ------------------------
+    // 3) 初始化 Firebase
+    // ------------------------
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // ------------------------
+    // 4) 全域變數
+    // ------------------------
+    let currentLanguage = localStorage.getItem('language') || 'zh-TW';
+    let currentRFID = "";
+    let unsubscribeTransactions = null;
+    let unsubscribeBalance = null;
+
+    // ------------------------
+    // 5) 監聽搜尋按鈕事件
+    // ------------------------
+    const rfidInput = document.getElementById("rfidInput");
+    const startDate = document.getElementById("startDate");
+    const endDate = document.getElementById("endDate");
+    const searchBtn = document.getElementById("searchBtn");
+    const transactionList = document.getElementById("transactionList");
+    const selectedDateTitle = document.getElementById("selectedDateTitle");
+    const balanceDisplay = document.getElementById("balanceDisplay");
+    const balanceAmount = document.getElementById("balanceAmount");
+
+    searchBtn.addEventListener("click", () => {
+      const rfid = rfidInput.value.trim();
+      const start = startDate.value;
+      const end = endDate.value;
+
+      if (!rfid) {
+        Swal.fire({
+          title: translations[currentLanguage].errorRFID,
+          icon: 'info',
+        });
+        return;
+      }
+      if (!start || !end) {
+        Swal.fire({
+          title: translations[currentLanguage].errorDateRange,
+          icon: 'info',
+        });
+        return;
+      }
+
+      fetchTransactions(rfid, start, end);
+    });
+
+    // ------------------------
+    // 6) 切換語言功能
+    // ------------------------
+    window.setLanguage = function(lang) {
+      if (!translations[lang]) {
+        console.error("No i18n data for:", lang);
+        return;
+      }
+      currentLanguage = lang;
+      localStorage.setItem('language', lang);
+      
+      // 更新所有帶有 data-i18n 的元素
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+
+      // 更新 placeholder 的多語系（僅適用於支援 placeholder 的輸入）
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (translations[lang][key]) {
+          el.setAttribute("placeholder", translations[lang][key]);
+        }
+      });
+
+      // 更新餘額顯示
+      if (currentRFID) {
+        setupRealtimeBalance(currentRFID);
+        fetchTransactions(currentRFID, startDate.value, endDate.value);
+      }
+
+      // 更新語言按鈕文字
+      const currentLangText = lang === 'zh-TW' ? '中文' : 'English';
+      document.querySelector('[data-i18n="currentLang"]').textContent = currentLangText;
+    }
+
+    // ------------------------
+    // 7) 查詢交易紀錄
+    // ------------------------
+    function fetchTransactions(rfid, start, end) {
+      currentRFID = rfid;
+      const startTime = new Date(start).getTime();
+      const endTime = new Date(end).getTime() + 86400000 - 1;
+
+      const transactionsPath = currentLanguage === 'en' ? `transactions-en/${rfid}` : `transactions/${rfid}`;
+      const transactionsRef = ref(db, transactionsPath);
+
+      Swal.fire({
+        title: translations[currentLanguage].querying,
+        text: translations[currentLanguage].loadingTransactions,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
+      // 移除之前的監聽器
+      if (unsubscribeTransactions) unsubscribeTransactions();
+      if (unsubscribeBalance) unsubscribeBalance();
+
+      unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
+        Swal.close();
+        transactionList.innerHTML = "";
+
+        if (snapshot.exists()) {
+          let hasData = false;
+
+          snapshot.forEach((child) => {
+            const { type, amount, timestamp } = child.val() || {};
+            const tMs = parseLocalizedTimestamp(timestamp);
+            if (tMs >= startTime && tMs <= endTime) {
+              hasData = true;
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td>${type || "-"}</td>
+                <td>${amount ?? 0}</td>
+                <td>${timestamp}</td>
+              `;
+              transactionList.appendChild(row);
+            }
+          });
+
+          if (!hasData) {
+            transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactionsInRange">範圍內無交易紀錄</td></tr>`;
+          }
+        } else {
+          transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactions">尚無交易紀錄</td></tr>`;
+        }
+
+        selectedDateTitle.textContent = `${translations[currentLanguage].dateRangeTitle} ${start} ${translations[currentLanguage].to} ${end}`;
+
+        // 顯示餘額
+        setupRealtimeBalance(rfid);
+      });
+    }
+
+    // ------------------------
+    // 8) 設置實時餘額更新
+    // ------------------------
+    function setupRealtimeBalance(rfid) {
+      const balancePath = currentLanguage === 'en' ? `balances-en/${rfid}` : `balances/${rfid}`;
+      const balanceRef = ref(db, balancePath);
+
+      // 移除之前的監聽器
+      if (unsubscribeBalance) unsubscribeBalance();
+
+      unsubscribeBalance = onValue(balanceRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const rawBalance = snapshot.val().balance || snapshot.val();
+          const balance = parseFloat(rawBalance) || 0;
+          balanceAmount.textContent = `$${balance.toFixed(2)}`;
+          balanceDisplay.classList.remove("d-none");
+        } else {
+          balanceAmount.textContent = `$0.00`;
+          balanceDisplay.classList.remove("d-none");
+        }
+      });
+    }
+
+    // ------------------------
+    // 9) 本地化時間
+    // ------------------------
+    function parseLocalizedTimestamp(tStr) {
+      const match = tStr?.match(
+        /(\d{4})\/(\d{2})\/(\d{2})\s+(上午|下午)(\d{1,2}):(\d{2}):(\d{2})/
+      );
+      if (!match) return null;
+
+      const [_, yyyy, MM, dd, period, hh, mm, ss] = match;
+      let hour = parseInt(hh, 10);
+      if (period === "下午" && hour < 12) hour += 12;
+      else if (period === "上午" && hour === 12) hour = 0;
+
+      return new Date(
+        parseInt(yyyy),
+        parseInt(MM) - 1,
+        parseInt(dd),
+        hour,
+        parseInt(mm),
+        parseInt(ss)
+      ).getTime();
+    }
+
+    // ------------------------
+    // 10) 初始化頁面
+    // ------------------------
+    function initializePage() {
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      setLanguage(savedLang);
+    }
+
+    // 初始化語言
+    document.addEventListener('DOMContentLoaded', () => {
+      initializePage();
+    });
+  </script>
+
+  <!-- 動態載入 Navbar -->
+  <script type="module">
+    async function loadNavbar() {
+      try {
+        const response = await fetch("navbar/navbar.html");
+        if (response.ok) {
+          const navbarHTML = await response.text();
+          document.querySelector("nav").innerHTML = navbarHTML;
+
+          // 當 Navbar 加載完成後，設置語言
+          const savedLang = localStorage.getItem("language") || "zh-TW";
+          setLanguage(savedLang);
+        } else {
+          console.error("無法加載導航欄：", response.status);
+        }
+      } catch (error) {
+        console.error("加載導航欄時出錯：", error);
+      }
+    }
+    loadNavbar();
+  </script>
+
+  <!-- 引入共用 Navbar CSS -->
+  <link href="navbar/navbar.css" rel="stylesheet">
+  <script src="navbar/navbar.js"></script>
+
+  <!-- 引入 Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
