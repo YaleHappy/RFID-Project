@@ -232,7 +232,6 @@ h1[data-i18n="title"] {
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getDatabase, ref, get, set, update, push } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
-    // Firebase 初始化
     const firebaseConfig = {
       apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
       authDomain: "rfid-project-4f420.firebaseapp.com",
@@ -242,6 +241,7 @@ h1[data-i18n="title"] {
       messagingSenderId: "572151111042",
       appId: "1:572151111042:web:db65f49191f977d56d439b"
     };
+
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
