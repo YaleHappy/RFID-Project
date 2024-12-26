@@ -264,64 +264,76 @@
   </main>
 
   <script>
-
-
     function loadTranslationFile(filePath, callback) {
       const script = document.createElement('script');
       script.src = filePath;
       script.type = 'module';
-
+  
       // 動態加載後執行 callback
       script.onload = () => callback();
       script.onerror = () => console.error(`Failed to load ${filePath}`);
       document.head.appendChild(script);
     }
-
+  
     // 動態加載 i18n 文件
     const page = location.pathname.split('/').pop().replace('.html', '');
-    const i18nFilePath = `lang/${page}-i18n.js`; // 根據當前頁面名稱加載對應翻譯文件
-
+    const i18nFilePath = `./lang/${page}-i18n.js`; // 確保路徑正確
+  
     loadTranslationFile(i18nFilePath, () => {
       import(`./${i18nFilePath}`).then(({ translations }) => {
         window.translations = translations; // 將翻譯數據存入全局變數
         initializePage();
+      }).catch((error) => {
+        console.error(`Error loading translation file: ${error}`);
+        // 在翻譯失敗時顯示內容
+        document.body.removeAttribute('hidden');
       });
     });
-
+  
     // 初始化頁面
     function initializePage() {
-      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      const savedLang = localStorage.getItem('language') || 'zh-TW'; // 統一預設語言為 'zh-TW'
       setLanguage(savedLang);
+      document.body.removeAttribute('hidden'); // 顯示內容
     }
-
+  
     // 設置語言
     function setLanguage(lang) {
-  const elements = document.querySelectorAll('[data-i18n]');
-  elements.forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    const translation = translations[lang]?.[key];
-    if (translation) {
-      el.textContent = translation;
+      const elements = document.querySelectorAll('[data-i18n]');
+      elements.forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const translation = translations[lang]?.[key];
+        if (translation) {
+          el.textContent = translation;
+        }
+      });
+  
+      // 更新 placeholder 的多語系（僅適用於支援 placeholder 的輸入）
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (translations[lang][key]) {
+          el.setAttribute("placeholder", translations[lang][key]);
+        }
+      });
+  
+      // 更新語言按鈕文字（假設存在 'currentLang' 元素）
+      const currentLangElement = document.querySelector('[data-i18n="currentLang"]');
+      if (currentLangElement) {
+        const currentLangText = lang === 'zh-TW' ? '中文' : 'English';
+        currentLangElement.textContent = currentLangText;
+      }
+  
+      // 保存選擇到本地存儲
+      localStorage.setItem('language', lang);
     }
-  });
-
-  // 更新按鈕上的語言名稱
-  const currentLangText = lang === 'zh-TW' ? '中文' : 'English';
-  document.querySelector('[data-i18n="currentLang"]').textContent = currentLangText;
-
-  // 保存選擇到本地存儲
-  localStorage.setItem('language', lang);
-}
-
-
-// 初始化語言
-document.addEventListener('DOMContentLoaded', () => {
-  const savedLang = localStorage.getItem('language') || 'en';
-  setLanguage(savedLang);
-});
-
+  
+    // 初始化語言
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedLang = localStorage.getItem('language') || 'zh-TW'; // 統一預設語言為 'zh-TW'
+      setLanguage(savedLang);
+    });
   </script>
-
+  
 
   <!-- 引入共用 Navbar CSS -->
   <link href="navbar/navbar.css" rel="stylesheet">
