@@ -1,5 +1,6 @@
 window.i18n = {
   "zh-TW": {
+    title: "遊客中心",
     currentLang: "中文",          // 導航欄顯示語言
     header: {
       title: "遊客中心"
@@ -43,6 +44,7 @@ window.i18n = {
   },
 
   "en": {
+    title: "Visitor Center",
     currentLang: "English",
     header: {
       title: "Visitor Center"
