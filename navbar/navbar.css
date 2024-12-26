@@ -1,0 +1,101 @@
+/* Navbar 樣式 */
+.navbar {
+  background-color: #ffcc00;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navbar .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 左右兩側均勻分佈 */
+}
+
+/* 網站名稱樣式 */
+.navbar-brand {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  white-space: nowrap; /* 防止文字換行 */
+  margin-right: auto; /* 確保名稱靠左 */
+}
+
+/* 導航鏈接樣式 */
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* 調整導航項目之間的間距 */
+}
+
+.navbar-nav .nav-link {
+  color: #333;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ff4500;
+}
+
+/* 語言切換按鈕樣式 */
+.language-switch {
+  display: flex;
+  gap: 10px; /* 調整按鈕之間的間距 */
+}
+
+.btn-language {
+  background-color: #ffcc00;
+  color: #333;
+  border: none;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.btn-language:hover {
+  background-color: #ff9900;
+  color: #fff;
+}
+
+/* 下拉菜單樣式 */
+.dropdown-menu {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu .dropdown-item {
+  font-weight: bold;
+  color: #333;
+  padding: 10px 15px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #ffcc00;
+  color: #fff;
+}
+
+
+.btn-language.active {
+  background-color: #ff9900;
+  color: #fff;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+  .navbar .container {
+      flex-wrap: wrap;
+  }
+
+/* 語言切換按鈕樣式 */
+.language-switch {
+  display: flex;
+  gap: 10px; /* 按鈕之間的間距 */
+  margin-left: auto; /* 自動將語言按鈕推到最右側 */
+  align-items: center; /* 保持垂直對齊 */
+}
+
+}
