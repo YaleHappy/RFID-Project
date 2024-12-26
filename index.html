@@ -277,7 +277,7 @@
   
     // 動態加載 i18n 文件
     const page = location.pathname.split('/').pop().replace('.html', '');
-    const i18nFilePath = `./lang/${page}-i18n.js`; // 確保路徑正確
+    const i18nFilePath = `./lang/index-i18n.js`; // 確保路徑正確
   
     loadTranslationFile(i18nFilePath, () => {
       import(`./${i18nFilePath}`).then(({ translations }) => {
@@ -333,6 +333,7 @@
       setLanguage(savedLang);
     });
   </script>
+  
   
 
   <!-- 引入共用 Navbar CSS -->
