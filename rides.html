@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="title">遊樂場</title>
+  <title data-i18n="title"></title>
   <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
 
   <!-- 引入 Bootstrap 5.3.3 -->
@@ -43,7 +43,6 @@
       justify-content: center;
       text-align: center;
     }
-
 
     header h1 {
       color: #fff;
@@ -93,6 +92,7 @@
       border: 10px solid #8B4513;
       border-radius: 50%;
       background-color: #FFD700;
+      animation: rotate 10s linear infinite;
     }
 
     .carousel .horse {
@@ -144,6 +144,7 @@
       height: 200px;
       border: 3px solid #333;
       border-radius: 50%;
+      animation: spin 10s linear infinite;
     }
 
     .ferris-wheel .car {
@@ -286,16 +287,9 @@
       display: block;
     }
 
-
-    dropdown-menu {
-      margin-top: 0;
-      /* 預設樣式移除間距 */
-    }
-
     .dropdown-item {
       cursor: pointer;
     }
-  </style>
   </style>
 </head>
 
@@ -304,8 +298,8 @@
   <nav class="navbar navbar-expand-lg" style="background-color: rgba(0, 0, 0, 0.75); position: relative;">
     <div class="container-fluid">
       <!-- 置中的品牌 -->
-      <a class="navbar-brand text-light position-absolute start-50 translate-middle-x" href="#" data-i18n="brand.title">歡樂遊樂場</a>
-      
+      <a class="navbar-brand text-light position-absolute start-50 translate-middle-x" href="#" data-i18n="brand.title"></a>
+
       <!-- 右側內容 -->
       <button class="navbar-toggler text-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" style="border-color: #fff;">
@@ -314,13 +308,13 @@
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav me-3">
           <li class="nav-item">
-            <a class="nav-link text-light" href="top-up.html" data-i18n="nav.topUpSystem">儲值系統</a>
+            <a class="nav-link text-light" href="top-up.html" data-i18n="nav.topUpSystem"></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" href="check-in.html" data-i18n="nav.backToCheckIn">回到檢票出口</a>
+            <a class="nav-link text-light" href="check-in.html" data-i18n="nav.backToCheckIn"></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link text-light" href="balance.html" data-i18n="nav.balanceInquiry">餘額查詢</a>
+            <a class="nav-link text-light" href="balance.html" data-i18n="nav.balanceInquiry"></a>
           </li>
         </ul>
         <div class="dropdown">
@@ -336,25 +330,25 @@
       </div>
     </div>
   </nav>
-  
+
 
   <!-- Header 區域，標題置中 -->
   <header>
-    <h1 data-i18n="header.title">遊樂場</h1>
+    <h1 data-i18n="header.title"></h1>
   </header>
 
   <!-- 主內容區 -->
   <main>
 
     <div class="container text-center mt-4">
-      <h2 data-i18n="header.subTitle">選擇您的遊樂設施</h2>
+      <h2 data-i18n="header.subTitle"></h2>
       <div class="mb-3">
         <button class="btn btn-primary" onclick="showGame('carouselGame')"
-          data-i18n="rides.carouselButton">旋轉木馬</button>
+          data-i18n="rides.carouselButton"></button>
         <button class="btn btn-success" onclick="showGame('ferrisWheelGame')"
-          data-i18n="rides.ferrisWheelButton">摩天輪</button>
+          data-i18n="rides.ferrisWheelButton"></button>
         <button class="btn btn-warning" onclick="showGame('rollerCoasterGame')"
-          data-i18n="rides.rollerCoasterButton">雲霄飛車</button>
+          data-i18n="rides.rollerCoasterButton"></button>
       </div>
     </div>
   </main>
@@ -367,7 +361,7 @@
       <div class="horse"></div>
       <div class="horse"></div>
     </div>
-    <button class="btn btn-primary mt-3" onclick="startCarousel()" data-i18n="rides.startCarousel">啟動旋轉木馬</button>
+    <button class="btn btn-primary mt-3" onclick="startCarousel()" data-i18n="rides.startCarousel"></button>
   </div>
 
   <!-- 摩天輪 -->
@@ -382,7 +376,7 @@
       <div class="car"></div>
       <div class="car"></div>
     </div>
-    <button class="btn btn-success mt-3" onclick="startFerrisWheel()" data-i18n="rides.startFerrisWheel">旋轉摩天輪</button>
+    <button class="btn btn-success mt-3" onclick="startFerrisWheel()" data-i18n="rides.startFerrisWheel"></button>
   </div>
 
   <!-- 雲霄飛車 -->
@@ -395,13 +389,12 @@
       </div>
     </div>
     <button class="btn btn-warning mt-3" onclick="startRollerCoaster()"
-      data-i18n="rides.startRollerCoaster">開始雲霄飛車</button>
-  </div>
+      data-i18n="rides.startRollerCoaster"></button>
   </div>
 
   <footer>
-    <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
-    <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜　41241215@nfu.edu.tw</p>
+    <p data-i18n="indexfoter1"></p>
+    <p data-i18n="indexfoter2"></p>
 
   </footer>
 
@@ -411,7 +404,7 @@
   <script>
     // === 多語言切換相關 ===
     function setLanguage(lang) {
-      localStorage.setItem('rideLanguage', lang);
+      localStorage.setItem('language', lang); // 使用統一的 'language' 鍵
       applyTranslations();
 
       const currentLangText = lang === 'zh-TW' ? '中文' : 'English';
@@ -419,7 +412,7 @@
     }
 
     function applyTranslations() {
-      const lang = localStorage.getItem('rideLanguage') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW'; // 使用統一的 'language' 鍵
       const translations = window.i18n[lang];
       if (!translations) return;
 
@@ -436,7 +429,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-      const savedLang = localStorage.getItem('rideLanguage') || 'zh-TW';
+      const savedLang = localStorage.getItem('language') || 'zh-TW'; // 使用統一的 'language' 鍵
       setLanguage(savedLang);
     });
 
@@ -462,7 +455,7 @@
 
     // === SweetAlert 確認是否繼續遊玩 ===
     function confirmContinue() {
-      const lang = localStorage.getItem('rideLanguage') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW'; // 使用統一的 'language' 鍵
       const translations = window.i18n[lang];
       Swal.fire({
         title: translations.alert.timeUpTitle,
@@ -504,25 +497,6 @@
       }, 3000);
     }
 
-
-    document.addEventListener("DOMContentLoaded", () => {
-            const modal = document.getElementById("balanceModal");
-            if (modal) {
-                modal.addEventListener("click", (event) => {
-                    if (event.target === modal) {
-                        closeModal();
-                    }
-                });
-                const closeButton = modal.querySelector(".close");
-                if (closeButton) {
-                    closeButton.addEventListener("click", closeModal);
-                }
-            }
-
-            // 語言載入
-            const savedLang = localStorage.getItem("language") || "zh-TW";
-            setLanguage(savedLang);
-        });
   </script>
 </body>
 

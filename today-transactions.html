@@ -2,14 +2,21 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title data-i18n="pagetitle">多日交易紀錄查詢</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title data-i18n="pagetitle"></title>
   <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
 
+  <!-- Bootstrap -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- 引入 Font Awesome -->
+  <!-- 自訂 Navbar 樣式 -->
+  <link href="navbar/navbar.css" rel="stylesheet" />
+
+  <!-- Font Awesome -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
   <style>
@@ -160,7 +167,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
       <!-- 網站名稱 -->
-      <a class="navbar-brand" href="index.html" data-i18n="title">Ambisa Amusement Park</a>
+      <a class="navbar-brand" href="index.html" data-i18n="title"></a>
 
       <!-- 導航按鈕 -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -168,10 +175,10 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
-          <li class="nav-item"><a class="nav-link" href="buy-ticket.html" data-i18n="buyTicket">Buy Ticket</a></li>
-          <li class="nav-item"><a class="nav-link" href="top-up.html" data-i18n="topUp">Top Up</a></li>
-          <li class="nav-item"><a class="nav-link" href="check-in.html" data-i18n="checkIn">Check In</a></li>
-          <li class="nav-item"><a class="nav-link" href="balance.html" data-i18n="wallet">E-Wallet</a></li>
+          <li class="nav-item"><a class="nav-link" href="buy-ticket.html" data-i18n="buyTicket"></a></li>
+          <li class="nav-item"><a class="nav-link" href="top-up.html" data-i18n="topUp"> </a></li>
+          <li class="nav-item"><a class="nav-link" href="check-in.html" data-i18n="checkIn"></a></li>
+          <li class="nav-item"><a class="nav-link" href="balance.html" data-i18n="wallet"></a></li>
         </ul>
       </div>
 
@@ -179,7 +186,7 @@
       <div class="dropdown">
         <button class="btn btn-language dropdown-toggle d-flex align-items-center" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
           <i class="fas fa-globe me-2"></i> <!-- 全球圖標 -->
-          <span data-i18n="currentLang">Language</span> <!-- 顯示當前語言 -->
+          <span data-i18n="currentLang"></span> <!-- 顯示當前語言 -->
         </button>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
           <li><a class="dropdown-item" onclick="setLanguage('zh-TW')">中文</a></li>
@@ -191,58 +198,61 @@
 
   <!-- 餘額顯示區域 -->
   <div class="balance-display d-none" id="balanceDisplay">
-    <h5 data-i18n="balanceLabel">餘額</h5>
+    <h5 data-i18n="balanceLabel"></h5>
     <p id="balanceAmount" data-i18n="balancePlaceholder">$0.00</p>
   </div>
 
   <div class="container mt-5">
     <div class="card shadow">
       <div class="card-body">
-        <h1 class="text-center mb-4" data-i18n="searchTransactions">多日交易紀錄查詢</h1>
+        <h1 class="text-center mb-4" data-i18n="searchTransactions"></h1>
 
         <!-- RFID 輸入 -->
         <div class="mb-3">
-          <label for="rfidInput" class="form-label" data-i18n="rfidLabel">請輸入/刷卡後取得 RFID</label>
+          <label for="rfidInput" class="form-label" data-i18n="rfidLabel"> </label>
           <input type="text" id="rfidInput" class="form-control" placeholder="例如 1234567890" data-i18n-placeholder="rfidPlaceholder" />
         </div>
 
         <!-- 日期範圍選擇 -->
         <div class="row mb-3">
           <div class="col-md-6">
-            <label for="startDate" class="form-label" data-i18n="startDateLabel">起始日期</label>
+            <label for="startDate" class="form-label" data-i18n="startDateLabel"></label>
             <input type="date" id="startDate" class="form-control" />
           </div>
           <div class="col-md-6">
-            <label for="endDate" class="form-label" data-i18n="endDateLabel">結束日期</label>
+            <label for="endDate" class="form-label" data-i18n="endDateLabel"></label>
             <input type="date" id="endDate" class="form-control" />
           </div>
         </div>
 
-        <button id="searchBtn" class="btn btn-primary w-100" data-i18n="searchTransactions">搜尋交易紀錄</button>
+        <button id="searchBtn" class="btn btn-primary w-100" data-i18n="searchTransactions"></button>
       </div>
     </div>
 
     <!-- 顯示查詢結果 -->
     <div class="mt-5">
-      <h2 id="selectedDateTitle" class="text-center text-secondary" data-i18n="dateRangeTitle">日期範圍：</h2>
+      <h2 id="selectedDateTitle" class="text-center text-secondary" data-i18n="dateRangeTitle"></h2>
       <div class="card">
         <div class="card-body">
           <table class="table table-striped table-hover table-responsive">
             <thead class="table-dark">
               <tr>
-                <th data-i18n="transactionType">交易類型</th>
-                <th data-i18n="amount">金額</th>
-                <th data-i18n="time">時間</th>
+                <th data-i18n="transactionType"></th>
+                <th data-i18n="amount"></th>
+                <th data-i18n="time"></th>
               </tr>
             </thead>
             <tbody id="transactionList">
-              <tr><td colspan="3" class="text-center" data-i18n="noQuery">請選擇條件進行查詢</td></tr>
+              <tr><td colspan="3" class="text-center" data-i18n="noQuery"></td></tr>
             </tbody>
           </table>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Footer, scripts, etc. -->
+  <!-- ... -->
 
   <!-- Firebase & 主要程式 (單一 script) -->
   <script type="module">
@@ -304,14 +314,14 @@
 
       if (!rfid) {
         Swal.fire({
-          title: translations[currentLanguage].errorRFID,
+          title: translations[currentLanguage].errorRFID || "錯誤",
           icon: 'info',
         });
         return;
       }
       if (!start || !end) {
         Swal.fire({
-          title: translations[currentLanguage].errorDateRange,
+          title: translations[currentLanguage].errorDateRange || "錯誤",
           icon: 'info',
         });
         return;
@@ -356,6 +366,13 @@
       // 更新語言按鈕文字
       const currentLangText = lang === 'zh-TW' ? '中文' : 'English';
       document.querySelector('[data-i18n="currentLang"]').textContent = currentLangText;
+
+      // 更新語言相關的其他部分，如表格標題
+      if (transactionChart) {
+        transactionChart.options.plugins.title.text = translations[lang].chartTitle || "總餘額折線圖";
+        transactionChart.data.datasets[0].label = translations[lang].datasetLabel || "總餘額";
+        transactionChart.update();
+      }
     }
 
     // ------------------------
@@ -364,14 +381,14 @@
     function fetchTransactions(rfid, start, end) {
       currentRFID = rfid;
       const startTime = new Date(start).getTime();
-      const endTime = new Date(end).getTime() + 86400000 - 1;
+      const endTime = new Date(end).getTime() + 86400000 - 1; // inclusive end of day
 
       const transactionsPath = currentLanguage === 'en' ? `transactions-en/${rfid}` : `transactions/${rfid}`;
       const transactionsRef = ref(db, transactionsPath);
 
       Swal.fire({
-        title: translations[currentLanguage].querying,
-        text: translations[currentLanguage].loadingTransactions,
+        title: translations[currentLanguage].querying || "查詢中",
+        text: translations[currentLanguage].loadingTransactions || "正在查詢交易紀錄，請稍候...",
         allowOutsideClick: false,
         didOpen: () => Swal.showLoading(),
       });
@@ -409,7 +426,7 @@
           transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactions">尚無交易紀錄</td></tr>`;
         }
 
-        selectedDateTitle.textContent = `${translations[currentLanguage].dateRangeTitle} ${start} ${translations[currentLanguage].to} ${end}`;
+        selectedDateTitle.textContent = `${translations[currentLanguage].dateRangeTitle || "選擇日期範圍"} ${start} ${translations[currentLanguage].to || "至"} ${end}`;
 
         // 顯示餘額
         setupRealtimeBalance(rfid);
@@ -420,7 +437,7 @@
     // 8) 設置實時餘額更新
     // ------------------------
     function setupRealtimeBalance(rfid) {
-      const balancePath = currentLanguage === 'en' ? `balances-en/${rfid}` : `balances/${rfid}`;
+      const balancePath = `balances/${rfid}`; // 固定路徑，不依賴語言
       const balanceRef = ref(db, balancePath);
 
       // 移除之前的監聽器
@@ -429,7 +446,7 @@
       unsubscribeBalance = onValue(balanceRef, (snapshot) => {
         if (snapshot.exists()) {
           const rawBalance = snapshot.val().balance || snapshot.val();
-          const balance = parseFloat(rawBalance) || 0;
+          const balance = Number(rawBalance) || 0;
           balanceAmount.textContent = `$${balance.toFixed(2)}`;
           balanceDisplay.classList.remove("d-none");
         } else {

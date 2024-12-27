@@ -4,61 +4,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="pageTitle">檢票系統</title>
+  <title data-i18n="pageTitle"></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
 
+  <!-- 引入 Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
   <style>
-    .modal-circle {
-      width: 140px;
-      /* 調整寬度 */
-      height: 140px;
-      /* 調整高度，確保為正方形 */
-      border-radius: 50%;
-      /* 確保圓形 */
-      display: flex;
-      align-items: center;
-      /* 垂直置中 */
-      justify-content: center;
-      /* 水平置中 */
-      margin: 0 auto;
-      background-color: #f8f9fa;
-      cursor: pointer;
-      border: 2px solid #007bff;
-      font-size: 16px;
-      /* 調整字體大小 */
-      line-height: 1.2;
-      /* 確保多行文字間距適中 */
-      text-align: center;
-      /* 文字置中 */
+    /* Navbar 樣式 */
+    .navbar {
+      background-color: #ffcc00;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
 
-    .modal-circle:hover {
-      background-color: #007bff;
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; /* 左右兩側均勻分佈 */
+    }
+
+    /* 網站名稱樣式 */
+    .navbar-brand {
+      font-size: 1.75rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+      white-space: nowrap; /* 防止文字換行 */
+      margin-right: auto; /* 確保名稱靠左 */
+    }
+
+    /* 導航鏈接樣式 */
+    .navbar-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px; /* 調整導航項目之間的間距 */
+    }
+
+    .navbar-nav .nav-link {
+      color: #333;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #ff4500;
+    }
+
+    /* 語言切換按鈕樣式 */
+    .language-switch {
+      display: flex;
+      gap: 10px; /* 調整按鈕之間的間距 */
+    }
+
+    .btn-language {
+      background-color: #ffcc00;
+      color: #333;
+      border: none;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .btn-language:hover {
+      background-color: #ff9900;
       color: #fff;
     }
 
-    /* Swal 模態框內的佈局間距 */
-    .swal2-html-container .d-flex {
-      gap: 30px;
-      /* 增加選項間距 */
-      flex-wrap: wrap;
-      /* 讓選項自動換行 */
+    /* 下拉菜單樣式 */
+    .dropdown-menu {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
+    .dropdown-menu .dropdown-item {
+      font-weight: bold;
+      color: #333;
+      padding: 10px 15px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+      background-color: #ffcc00;
+      color: #fff;
+    }
+
+    .btn-language.active {
+      background-color: #ff9900;
+      color: #fff;
+    }
+
+    /* 響應式設計 */
     @media (max-width: 768px) {
-      .modal-circle {
-        width: 110px;
-        /* 手機尺寸縮小圈圈 */
-        height: 110px;
-        font-size: 14px;
+      .navbar .container {
+        flex-wrap: wrap;
       }
 
-      .swal2-html-container .d-flex {
-        gap: 20px;
-        /* 小螢幕下縮小間距 */
+      /* 語言切換按鈕樣式 */
+      .language-switch {
+        display: flex;
+        gap: 10px; /* 按鈕之間的間距 */
+        margin-left: auto; /* 自動將語言按鈕推到最右側 */
+        align-items: center; /* 保持垂直對齊 */
       }
+    }
+
+    /* 餘額顯示區域 */
+    .balance-display {
+      position: fixed;
+      top: 80px; /* 根據 Navbar 的高度調整 */
+      right: 20px;
+      background-color: #ffffff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+      transition: opacity 0.3s;
+    }
+
+    .balance-display h5 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .balance-display p {
+      margin: 0;
+      font-size: 1.2rem;
+      color: #007bff;
+    }
+
+    /* 交易表格樣式 */
+    .table {
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .table th,
+    .table td {
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .table-hover tbody tr:hover {
+      background-color: #fffae6;
     }
 
     /* 確保頁面內其他元素不影響 footer 的定位 */
@@ -95,27 +188,118 @@
       padding-bottom: 50px;
       /* 留出 footer 的高度空間，避免內容被遮住 */
     }
-  </style>
 
+    /* 修改後的 Swal 模態框內的圓形按鈕樣式 */
+    .swal2-html-container .modal-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+      cursor: pointer;
+      border: 2px solid #007bff;
+      font-size: 16px;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .swal2-html-container .modal-circle:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .swal2-html-container .d-flex {
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+      .swal2-html-container .modal-circle {
+        width: 110px;
+        height: 110px;
+        font-size: 14px;
+      }
+
+      .swal2-html-container .d-flex {
+        gap: 20px;
+      }
+    }
+  </style>
 
 </head>
 
-<body>
-  <nav></nav>
+<body class="bg-light">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+      <!-- 網站名稱 -->
+      <a class="navbar-brand" href="index.html" data-i18n="title"></a>
 
-  <div class="container py-5">
-    <h1 class="text-center mb-4" data-i18n="pageTitle">檢票系統</h1>
-    <div class="alert alert-info text-center" id="promptMessage" data-i18n="promptMessage">
-      請讀取您的 RFID 卡片以進行檢票。
+      <!-- 導航按鈕 -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="buy-ticket.html" data-i18n="buyTicket"></a></li>
+          <li class="nav-item"><a class="nav-link" href="top-up.html" data-i18n="topUp"></a></li>
+          <li class="nav-item"><a class="nav-link" href="check-in.html" data-i18n="checkIn"></a></li>
+          <li class="nav-item"><a class="nav-link" href="balance.html" data-i18n="wallet"></a></li>
+        </ul>
+      </div>
+
+      <!-- 語言切換按鈕 -->
+      <div class="dropdown">
+        <button class="btn btn-language dropdown-toggle d-flex align-items-center" type="button" id="languageDropdown"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-globe me-2"></i> <!-- 全球圖標 -->
+          <span data-i18n="currentLang"></span> <!-- 顯示當前語言 -->
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+          <li><a class="dropdown-item" onclick="setLanguage('zh-TW')">中文</a></li>
+          <li><a class="dropdown-item" onclick="setLanguage('en')">English</a></li>
+        </ul>
+      </div>
     </div>
+  </nav>
 
+  <!-- 餘額顯示區域 -->
+  <div class="balance-display d-none" id="balanceDisplay">
+    <h5 data-i18n="balanceLabel"></h5>
+    <p id="balanceAmount" data-i18n="balancePlaceholder">$0.00</p>
   </div>
 
+  <div class="container py-5 content">
+    <h1 class="text-center mb-4" data-i18n="pageTitle"></h1>
+    <div class="alert alert-info text-center" id="promptMessage" data-i18n="promptMessage">
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p data-i18n="indexfoter1"></p>
+    <p data-i18n="indexfoter2"></p>
+  </footer>
+
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Firebase & 主要程式 (單一 script) -->
   <script type="module">
+    // ------------------------
+    // 1) 匯入 Firebase / i18n
+    // ------------------------
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getDatabase, ref, get, push, remove } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { translations } from "./lang/check-in-i18n.js";
 
+    // ---------------------------------------------
+    // 2) 你的 Firebase 設定（請改成有效的憑證）
+    // ---------------------------------------------
     const firebaseConfig = {
       apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
       authDomain: "rfid-project-4f420.firebaseapp.com",
@@ -126,11 +310,13 @@
       appId: "1:572151111042:web:db65f49191f977d56d439b"
     };
 
+    // ------------------------
+    // 3) 初始化 Firebase
+    // ------------------------
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const lang = localStorage.getItem("language") || "zh-TW";
-    const translations = window.translations || {};  // 從全局 translations 變數中獲取對應語言的翻譯
-
+    // const translations = window.translations || {};  // 從全局 translations 變數中獲取對應語言的翻譯
 
     let rfidBuffer = "";
     let timeout = null;
@@ -152,8 +338,6 @@
         // 取得當前語言
         const savedLang = localStorage.getItem("language") || "zh-TW";
 
-
-
         // 根據語言選擇翻譯
         const langData = translations[savedLang];
 
@@ -169,12 +353,12 @@
           const ticketSnapshot = await get(ticketRef);
           const recordSnapshot = await get(recordRef);
 
-          const lang = localStorage.getItem("language") || "zh-TW"; // 从 localStorage 获取语言，默认为繁体中文
+          // const lang = localStorage.getItem("language") || "zh-TW"; // 從 localStorage 獲取語言，已在上方獲取
 
           if (!ticketSnapshot.exists()) {
             Swal.fire(
-              translations[lang].errorTitle, // 动态标题
-              translations[lang].noValidTicket, // 动态提示内容
+              translations[savedLang].errorTitle, // 動態標題
+              translations[savedLang].noValidTicket, // 動態提示內容
               "error"
             );
             return;
@@ -185,38 +369,34 @@
 
           if (allUsers.length === 0) {
             Swal.fire(
-              translations[lang].errorTitle, // 动态标题
-              translations[lang].invalidTicketNoUser, // 动态提示内容
+              translations[savedLang].errorTitle, // 動態標題
+              translations[savedLang].invalidTicketNoUser, // 動態提示內容
               "error"
             );
             return;
           }
 
           if (recordSnapshot.exists()) {
-            const lang = localStorage.getItem('language') || 'zh-TW'; // 根據 localStorage 設定的語言來決定顯示哪個語言
-            const translations = window.translations || {}; // 從全局 translations 變數中獲取對應語言的翻譯
-
             // 使用語言字典來動態替換
             Swal.fire({
-              title: translations[lang].confirmTitle,  // 根據語言顯示標題
+              title: translations[savedLang].confirmTitle,  // 根據語言顯示標題
               icon: "question",
               html: `
-      <div class="d-flex justify-content-around">
-        <button id="leaveButton" class="btn btn-danger">${translations[lang].leaveButton}</button>  <!-- 動態顯示按鈕文字 -->
-        <button id="destinationButton" class="btn btn-primary">${translations[lang].destinationButton}</button>
-        <button id="cancelButton" class="btn btn-secondary">${translations[lang].cancelButton}</button>
-      </div>
-    `,
+                <div class="d-flex justify-content-around">
+                  <button id="leaveButton" class="btn btn-danger">${translations[savedLang].leaveButton}</button>  <!-- 動態顯示按鈕文字 -->
+                  <button id="destinationButton" class="btn btn-primary">${translations[savedLang].destinationButton}</button>
+                  <button id="cancelButton" class="btn btn-secondary">${translations[savedLang].cancelButton}</button>
+                </div>
+              `,
               showConfirmButton: false,
               allowOutsideClick: false,
             });
-
 
             // 綁定事件
             document.getElementById("leaveButton").addEventListener("click", async () => {
               await remove(ticketRef);
               await remove(recordRef);
-              Swal.fire(langData.success, langData.leaveSuccess, "success"); // 動態顯示翻譯內容
+              Swal.fire(translations[savedLang].success, translations[savedLang].leaveSuccess, "success"); // 動態顯示翻譯內容
             });
 
             document.getElementById("destinationButton").addEventListener("click", () => {
@@ -231,44 +411,43 @@
             // 第一次檢票
             const userDetails = allUsers
               .map((user, index) => {
-                // 确保 ticketType 正确，若不存在则提供默认值
+                // 確保 ticketType 正確，若不存在則提供默認值
                 const ticketType = typeof user.ticketType === "object"
-                  ? user.ticketType[lang] || (lang === "zh-TW" ? "未知票種" : "Unknown Ticket")
-                  : (lang === "zh-TW" ? "未知票種" : "Unknown Ticket");
+                  ? user.ticketType[savedLang] || (savedLang === "zh-TW" ? "未知票種" : "Unknown Ticket")
+                  : (savedLang === "zh-TW" ? "未知票種" : "Unknown Ticket");
 
-                return `${index + 1}. ${user.name} - ${ticketType} }`;
+                return `${user.name} - ${ticketType} `;
               })
               .join("<br>");
 
-            // 动态翻译标题和按钮
-            const title = translations[lang]?.ticketSuccessTitle || (lang === "zh-TW" ? "檢票成功" : "Check-in Successful");
-            const confirmButtonText = translations[lang]?.chooseDestinationButton || (lang === "zh-TW" ? "選擇目的地" : "Choose Destination");
-            const cancelButtonText = translations[lang]?.cancelButton || (lang === "zh-TW" ? "取消" : "Cancel");
+            // 動態翻譯標題和按鈕
+            const title = translations[savedLang]?.ticketSuccessTitle || (savedLang === "zh-TW" ? "檢票成功" : "Check-in Successful");
+            const confirmButtonText = translations[savedLang]?.chooseDestinationButton || (savedLang === "zh-TW" ? "選擇目的地" : "Choose Destination");
+            const cancelButtonText = translations[savedLang]?.cancelButton || (savedLang === "zh-TW" ? "取消" : "Cancel");
 
-            // 显示 Swal.fire
+            // 顯示 Swal.fire
             Swal.fire({
-              title, // 使用动态标题
-              html: userDetails, // 用户详情
+              title, // 使用動態標題
+              html: userDetails, // 用戶詳情
               icon: "success",
               showCancelButton: true,
-              confirmButtonText, // 使用动态确认按钮
-              cancelButtonText, // 使用动态取消按钮
+              confirmButtonText, // 使用動態確認按鈕
+              cancelButtonText, // 使用動態取消按鈕
             }).then((result) => {
               if (result.isConfirmed) {
                 openDestinationSelection(rfid, recordRef, ticketData);
               }
             });
 
-            // 记录进场
+            // 記錄進場
             await push(recordRef, {
-              status: lang === "zh-TW" ? "入場" : "Check-in",
+              status: savedLang === "zh-TW" ? "入場" : "Check-in",
               timestamp: new Date().toISOString(),
               users: allUsers.map((user) => ({
                 name: user.name,
                 ticketPrice: user.ticketPrice,
               })),
             });
-
           }
         } catch (error) {
           Swal.fire("錯誤", `檢票失敗：${error.message}`, "error");
@@ -276,10 +455,9 @@
       }
     });
 
-
     function openDestinationSelection(rfid, recordRef, ticketData) {
       // 定義翻譯字典
-      const translations = {
+      const destinationTranslations = {
         "zh-TW": {
           title: "選擇您的目的地",
           destinations: {
@@ -302,55 +480,52 @@
 
       // 獲取當前語言
       const savedLang = localStorage.getItem('language') || 'zh-TW';
-      const langData = translations[savedLang]; // 根據語言獲取翻譯
+      const langData = destinationTranslations[savedLang]; // 根據語言獲取翻譯
 
       // 動態顯示彈窗
       Swal.fire({
         title: langData.title,
         html: `
-      <div class="d-flex justify-content-around">
-        <div class="modal-circle" id="visitorCenter">${langData.destinations.visitorCenter}</div>
-        <div class="modal-circle" id="foodCourt">${langData.destinations.foodCourt}</div>
-        <div class="modal-circle" id="rides">${langData.destinations.rides}</div>
-        <div class="modal-circle" id="customShop">${langData.destinations.customShop}</div>
-      </div>
-    `,
+          <div class="d-flex justify-content-around">
+            <div class="modal-circle" id="visitorCenter">${langData.destinations.visitorCenter}</div>
+            <div class="modal-circle" id="foodCourt">${langData.destinations.foodCourt}</div>
+            <div class="modal-circle" id="rides">${langData.destinations.rides}</div>
+            <div class="modal-circle" id="customShop">${langData.destinations.customShop}</div>
+          </div>
+        `,
         showConfirmButton: false,
         allowOutsideClick: false,
       });
 
       // 綁定按鈕事件
       document.getElementById("visitorCenter").addEventListener("click", async () => {
-        const savedLang = localStorage.getItem('language') || 'zh-TW'; // 獲取當前語言
         await updateDestination(rfid, langData.destinations.visitorCenter, recordRef);
         window.location.href = `visitor_center.html?lang=${savedLang}`;
       });
 
-
       document.getElementById("foodCourt").addEventListener("click", async () => {
         await updateDestination(rfid, langData.destinations.foodCourt, recordRef);
-        window.location.href = "food_court.html";
+        window.location.href = "food_court.html?lang=" + savedLang;
       });
 
       document.getElementById("rides").addEventListener("click", async () => {
         await updateDestination(rfid, langData.destinations.rides, recordRef);
-        window.location.href = "rides.html";
+        window.location.href = "rides.html?lang=" + savedLang;
       });
 
       document.getElementById("customShop").addEventListener("click", async () => {
         await updateDestination(rfid, langData.destinations.customShop, recordRef);
-        window.location.href = "custom_shop.html";
+        window.location.href = "custom_shop.html?lang=" + savedLang;
       });
     }
 
-    function updateDestination(rfid, destination) {
+    function updateDestination(rfid, destination, recordRef) {
       console.log(`RFID: ${rfid}, Destination: ${destination}`);
       // 在這裡進行其他操作，例如更新 UI 或記錄日誌
     }
-
-
   </script>
 
+  <!-- 翻譯相關程式碼 -->
   <script>
     function loadTranslationFile(filePath, callback) {
       const script = document.createElement('script');
@@ -382,19 +557,18 @@
 
     // 設置語言
     function setLanguage(lang) {
-      if (!window.translations || !translations[lang]) {
+      if (!window.translations || !window.translations[lang]) {
         console.error(`無法找到語言包或語言: ${lang}`);
         localStorage.setItem('language', lang); // 儲存選擇的語言
         location.reload(); // 重新加載頁面以應用新的語言
-
         return;
       }
       // 更新翻譯內容
       const elements = document.querySelectorAll('[data-i18n]');
       elements.forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          el.textContent = translations[lang][key];
+        if (window.translations[lang][key]) {
+          el.textContent = window.translations[lang][key];
         }
       });
 
@@ -402,8 +576,8 @@
       const placeholders = document.querySelectorAll('[data-i18n-placeholder]');
       placeholders.forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        if (translations[lang][key]) {
-          el.placeholder = translations[lang][key];
+        if (window.translations[lang][key]) {
+          el.setAttribute('placeholder', window.translations[lang][key]);
         }
       });
 
@@ -411,8 +585,8 @@
       const buttons = document.querySelectorAll('[data-i18n="addUserButton"], [data-i18n="removeButton"]');
       buttons.forEach(button => {
         const key = button.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          button.textContent = translations[lang][key];
+        if (window.translations[lang][key]) {
+          button.textContent = window.translations[lang][key];
         }
       });
 
@@ -428,15 +602,15 @@
       const navItems = document.querySelectorAll('[data-i18n="buyTicket"], [data-i18n="topUp"], [data-i18n="checkIn"], [data-i18n="wallet"]');
       navItems.forEach(item => {
         const key = item.getAttribute('data-i18n');
-        if (translations[lang][key]) {
-          item.textContent = translations[lang][key];
+        if (window.translations[lang][key]) {
+          item.textContent = window.translations[lang][key];
         }
       });
 
       // 更新提示訊息
       const promptMessage = document.getElementById('promptMessage');
-      if (translations[lang]['promptMessage']) {
-        promptMessage.textContent = translations[lang]['promptMessage'];
+      if (window.translations[lang]['promptMessage']) {
+        promptMessage.textContent = window.translations[lang]['promptMessage'];
       } else {
         promptMessage.textContent = "提示翻譯缺失！";
       }
@@ -445,62 +619,19 @@
       localStorage.setItem('language', lang);
     }
 
-
-
-    // 初始化語言
+    // 確保所有元素在 DOM 完成後更新語言
     document.addEventListener('DOMContentLoaded', () => {
       const lang = localStorage.getItem("language") || "zh-TW"; // 預設為中文
-      setLanguageForPage(lang);  // 設置語言
+      setLanguage(lang);  // 設置語言
 
       // 根據語言更新頁面文字
-      const translations = i18n[lang];
       const promptMessage = document.getElementById('promptMessage');
-      promptMessage.innerHTML = translations.promptMessage || "請讀取您的 RFID 卡片以進行檢票。";
-    });
-
-
-    async function loadTranslationFile(filePath) {
-      try {
-        const module = await import(filePath); // 加載翻譯模組
-        return module.translations;
-      } catch (error) {
-        console.error(`無法加載翻譯文件: ${filePath}`, error);
-        return null;
-      }
-    }
-
-    // 初始化翻譯
-    loadTranslationFile(i18nFilePath).then(translations => {
-      if (translations) {
-        window.translations = translations; // 將翻譯設置為全局變數
-        initializePage();
+      if (window.translations[lang] && window.translations[lang].promptMessage) {
+        promptMessage.innerHTML = window.translations[lang].promptMessage;
       } else {
-        console.error('翻譯文件加載失敗');
+        promptMessage.innerHTML = "請讀取您的 RFID 卡片以進行檢票。";
       }
     });
-
-    function updateLanguageForNewElements(parentElement) {
-      const lang = localStorage.getItem("language") || "zh-TW";
-      const translations = window.translations || {};
-
-      // 更新翻譯內容
-      parentElement.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-          el.textContent = translations[lang][key];
-        }
-      });
-
-      // 更新佔位符翻譯
-      parentElement.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (translations[lang] && translations[lang][key]) {
-          el.placeholder = translations[lang][key];
-        }
-      });
-    }
-
-
   </script>
 
   <!-- 引入共用 Navbar CSS -->
@@ -508,12 +639,5 @@
   <script src="navbar/navbar.js"></script>
 
 </body>
-
-
-<footer class="footer">
-  <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
-  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw</p>
-</footer>
-
 
 </html>

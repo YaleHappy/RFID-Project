@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title data-i18n="pagetitle">電子錢包</title>
+    <title data-i18n="pagetitle"></title>
     <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
 
 
@@ -20,33 +20,33 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+
     <style>
-/* 頁面內其他元素 */
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%; /* 保證整個頁面的高度 */
-  display: flex;
-  flex-direction: column;
-}
-
-/* 主要內容區域 */
-.content {
-  flex: 1;
-  padding-bottom: 50px; /* 預留空間給 Footer，避免重疊 */
-  box-sizing: border-box;
-  min-height: calc(100vh - 100px); /* 確保內容至少填滿視窗高度 */
-}
-
-/* 固定在頁面底部的 Footer */
-.footer {
-  background-color: #343a40;
-  color: white;
-  text-align: center;
-  padding: 10px 0;
-  width: 100%;
-}
-
+      /* 頁面內其他元素 */
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%; /* 保證整個頁面的高度 */
+        display: flex;
+        flex-direction: column;
+      }
+  
+      /* 主要內容區域 */
+      .content {
+        flex: 1;
+        padding-bottom: 50px; /* 預留空間給 Footer，避免重疊 */
+        box-sizing: border-box;
+        min-height: calc(100vh - 100px); /* 確保內容至少填滿視窗高度 */
+      }
+  
+      /* 固定在頁面底部的 Footer */
+      .footer {
+        background-color: #343a40;
+        color: white;
+        text-align: center;
+        padding: 10px 0;
+        width: 100%;
+      }
     </style>
   </head>
 
@@ -57,17 +57,16 @@ html, body {
 
     <!-- 餘額查詢 -->
     <div class="container py-5">
-      <h1 class="text-center mb-4" data-i18n="findwallent">查詢錢包資訊</h1>
+      <h1 class="text-center mb-4" data-i18n="findwallent"></h1>
       <div
         class="alert alert-info text-center"
         id="promptMessage"
         data-i18n="promptMessage"
       >
-        請讀取您的 RFID 卡片以查詢。
       </div>
       <div id="balanceInfo" class="d-none">
         <h2 class="text-center">
-          <span data-i18n="currentBalanceLabel">目前餘額：</span>
+          <span data-i18n="currentBalanceLabel"></span>
           <span id="balanceAmount">$0</span>
         </h2>
         <!-- 切換圖表按鈕（置中 & 預設隱藏） -->
@@ -77,7 +76,7 @@ html, body {
             class="btn btn-primary d-none"
             data-i18n="toggleChartBtn"
           >
-            切換圖表
+            
           </button>
         </div>
       </div>
@@ -85,7 +84,7 @@ html, body {
             <!-- 圖表 -->
             <div class="mt-5 mb-5 d-none" id="chartContainer">
               <!-- 這個 h3 只是「HTML 上方標題」，也可透過 data-i18n 轉語系 -->
-              <h3 class="text-center" data-i18n="chartTitle">總餘額折線圖</h3>
+              <h3 class="text-center" data-i18n="chartTitle"></h3>
               <canvas id="transactionChart" height="100"></canvas>
             </div>
           </div>
@@ -98,7 +97,7 @@ html, body {
         data-i18n="errorMessage"
         role="alert"
       >
-        無法查詢餘額，請確認卡片是否有效。
+        
       </div>
     </div>
 
@@ -106,14 +105,14 @@ html, body {
     <div class="container">
       <div id="transactionInfo" class="d-none">
         <h3 class="text-center mt-4" data-i18n="transactionListTitle">
-          交易記錄清單
+          
         </h3>
         <table class="table table-striped mt-3">
           <thead>
             <tr>
-              <th scope="col" data-i18n="record">紀錄</th>
-              <th scope="col" data-i18n="amount">金額</th>
-              <th scope="col" data-i18n="time">時間</th>
+              <th scope="col" data-i18n="record"></th>
+              <th scope="col" data-i18n="amount"></th>
+              <th scope="col" data-i18n="time"></th>
             </tr>
           </thead>
           <tbody id="transactionList"></tbody>
@@ -328,7 +327,7 @@ html, body {
   // 1) 取得當前語言，或你也可把它做為參數直接傳進來
   const lang = localStorage.getItem("language") || "zh-TW";
   // 2) 從 translations 撈出對應字串
-  const chartTitleStr = translations[lang]?.chartTitle || "總餘額折線圖";
+  const chartTitleStr = translations[lang]?.chartdivided || "總餘額折線圖";
   const datasetLabelStr = translations[lang]?.datasetLabel || "總餘額";
 
   const chartContainer = document.getElementById("chartContainer");
@@ -559,9 +558,9 @@ html, body {
     </script>
 
 <footer class="footer">
-  <p data-i18n="indexfoter1">© 2024 安比薩遊樂園。All Rights Reserved.</p>
-  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw</p>
-  <p data-i18n="clickHint">詳細查詢交易紀錄：連點 5 下此區域。</p>
+  <p data-i18n="indexfoter1"></p>
+  <p data-i18n="indexfoter2"></p>
+  <p data-i18n="clickHint"></p>
 </footer>
 
 <script>
