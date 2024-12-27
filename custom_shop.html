@@ -1,12 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="title"></title>
-  <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
+  <title data-i18n="title">自訂商品專區</title>
 
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -19,125 +17,112 @@
   <script src="lang/custom_shop-i18n.js"></script>
 
   <style>
-    /* Navbar 樣式 */
-    .navbar-custom {
-      background-color: rgba(0, 0, 0, 0.75);
-      /* 背景色 */
-      display: flex;
-      align-items: center;
-      /* 垂直方向居中 */
-      justify-content: center;
-      /* 水平方向居中 */
-      height: 60px;
-      /* 固定高度 */
-    }
+ /* Navbar 样式 */
+/* Navbar 樣式 */
+.navbar-custom {
+  background-color: rgba(0, 0, 0, 0.75); /* 背景色 */
+  display: flex;
+  align-items: center; /* 垂直方向居中 */
+  justify-content: center; /* 水平方向居中 */
+  height: 60px; /* 固定高度 */
+}
 
-    .navbar-custom .container-fluid {
-      display: flex;
-      justify-content: space-between;
-      /* 左右對齊 */
-      align-items: center;
-    }
+.navbar-custom .container-fluid {
+  display: flex;
+  justify-content: space-between; /* 左右對齊 */
+  align-items: center;
+}
 
-    .navbar-custom .navbar-brand {
-      font-size: 1.5rem;
-      /* 調整標題字體大小 */
-      font-weight: bold;
-      text-align: center;
-      /* 水平置中 */
-      margin: 0 auto;
-      /* 自動左右居中 */
-      color: #fff !important;
-    }
+.navbar-custom .navbar-brand {
+  font-size: 1.5rem; /* 調整標題字體大小 */
+  font-weight: bold;
+  text-align: center; /* 水平置中 */
+  margin: 0 auto; /* 自動左右居中 */
+  color: #fff !important;
+}
 
-    .navbar-custom .nav-link {
-      color: #fff !important;
-      margin: 0 10px;
-      /* 增加間距 */
-    }
+.navbar-custom .nav-link {
+  color: #fff !important;
+  margin: 0 10px; /* 增加間距 */
+}
 
-    .navbar-custom .nav-link:hover {
-      color: #ffd700 !important;
-      /* 滑鼠懸停時顏色 */
-    }
+.navbar-custom .nav-link:hover {
+  color: #ffd700 !important; /* 滑鼠懸停時顏色 */
+}
 
-    .navbar-custom .dropdown-menu {
-      right: 0;
-      /* 語言切換選單靠右 */
-      left: auto;
-    }
+.navbar-custom .dropdown-menu {
+  right: 0; /* 語言切換選單靠右 */
+  left: auto;
+}
 
-    /* 其他元素樣式 */
-    h1[data-i18n="title"] {
-      margin-top: 20px;
-    }
+/* 其他元素樣式 */
+h1[data-i18n="title"] {
+  margin-top: 20px;
+}
 
-    .product-info {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+.product-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    .product-info img {
-      max-width: 200px;
-      height: auto;
-      margin-bottom: 10px;
-    }
+.product-info img {
+  max-width: 200px;
+  height: auto;
+  margin-bottom: 10px;
+}
 
-    .product-info h4 {
-      margin: 5px 0;
-    }
+.product-info h4 {
+  margin: 5px 0;
+}
 
-    .btn-container {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
+.btn-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
 
-    .product-list {
-      max-width: 600px;
-      margin: 20px auto;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      background-color: #f9f9f9;
-    }
+.product-list {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
 
-    .product-list h5 {
-      margin-bottom: 15px;
-    }
+.product-list h5 {
+  margin-bottom: 15px;
+}
 
-    .product-list ul {
-      list-style-type: none;
-      padding: 0;
-    }
+.product-list ul {
+  list-style-type: none;
+  padding: 0;
+}
 
-    .product-list li {
-      margin: 5px 0;
-    }
+.product-list li {
+  margin: 5px 0;
+}
 
-    #defaultProducts {
-      max-height: 200px;
-      /* 限制高度 */
-      overflow-y: auto;
-      /* 添加滾動條 */
-    }
+#defaultProducts {
+  max-height: 200px; /* 限制高度 */
+  overflow-y: auto; /* 添加滾動條 */
+}
 
-    /* 適配小螢幕樣式 */
-    @media (max-width: 768px) {
-      .navbar-custom {
-        justify-content: space-between;
-      }
 
-      .navbar-custom .navbar-brand {
-        text-align: center;
-      }
-
-      .navbar-custom .nav-link {
-        padding: 0 5px;
-      }
-    }
+/* 適配小螢幕樣式 */
+@media (max-width: 768px) {
+  .navbar-custom {
+    justify-content: space-between;
+  }
+  .navbar-custom .navbar-brand {
+    text-align: center;
+  }
+  .navbar-custom .nav-link {
+    padding: 0 5px;
+  }
+}
   </style>
 </head>
 
@@ -145,15 +130,21 @@
   <nav class="navbar navbar-expand-lg navbar-custom ">
     <div class="container-fluid">
       <!-- 中間的品牌標題 -->
-      <a class="navbar-brand text-center mx-auto navbar-brand text-light position-absolute start-50 translate-middle-x"
-        data-i18n="brand.title">Custom Shop</a>
-
+      <a class="navbar-brand text-center mx-auto navbar-brand text-light position-absolute start-50 translate-middle-x" data-i18n="brand.title">Custom Shop</a>
+  
       <!-- 漢堡菜單 (小螢幕用) -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+        aria-controls="navbarNav"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
         <span class="navbar-toggler-icon"></span>
       </button>
-
+  
       <!-- 右側導航按鈕 -->
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
         <ul class="navbar-nav">
@@ -167,8 +158,14 @@
             <a class="nav-link" href="balance.html" data-i18n="nav.balance">Balance Inquiry</a>
           </li>
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-              data-i18n="nav.language">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              role="button"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              data-i18n="nav.language"
+            >
               English
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
@@ -180,11 +177,15 @@
       </div>
     </div>
   </nav>
+  
+  
+
+
 
   <!-- 標題置中 -->
   <div class="container py-5">
     <div class="alert alert-info text-center" data-i18n="scanOrAdd">
-      
+      請掃描商品條碼，或手動新增商品。
     </div>
 
     <!-- 預設商品列表 -->
@@ -192,7 +193,7 @@
       <h5>
         <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#defaultProductsCollapse"
           aria-expanded="false" aria-controls="defaultProductsCollapse" data-i18n="defaultProductsTitle">
-          
+          預設商品列表
         </button>
       </h5>
       <div id="defaultProductsCollapse" class="collapse">
@@ -202,15 +203,21 @@
 
     <!-- 已掃描商品列表 -->
     <div class="product-list">
-      <h5 data-i18n="scannedProductsTitle"></h5>
+      <h5 data-i18n="scannedProductsTitle">已掃描商品</h5>
       <ul id="scannedProducts"><!-- 動態加入商品條目 --></ul>
     </div>
 
     <!-- 功能按鈕區 -->
     <div class="btn-container">
-      <button class="btn btn-primary" id="manualQueryBtn" data-i18n="btn.manualQuery"></button>
-      <button class="btn btn-success" id="addProductBtn" data-i18n="btn.addProduct"></button>
-      <button class="btn btn-warning" id="checkoutBtn" data-i18n="btn.checkout"></button>
+      <button class="btn btn-primary" id="manualQueryBtn" data-i18n="btn.manualQuery">
+        手動查詢商品
+      </button>
+      <button class="btn btn-success" id="addProductBtn" data-i18n="btn.addProduct">
+        新增商品
+      </button>
+      <button class="btn btn-warning" id="checkoutBtn" data-i18n="btn.checkout">
+        結帳
+      </button>
     </div>
 
     <!-- 商品資訊顯示區 -->
@@ -224,6 +231,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
     import { getDatabase, ref, get, set, update, push } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
+    // Firebase 初始化
     const firebaseConfig = {
       apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
       authDomain: "rfid-project-4f420.firebaseapp.com",
@@ -233,7 +241,6 @@
       messagingSenderId: "572151111042",
       appId: "1:572151111042:web:db65f49191f977d56d439b"
     };
-
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
@@ -243,12 +250,12 @@
 
     // 1. 語言切換 - 暴露到全域
     window.setLanguage = function (lang) {
-      localStorage.setItem('language', lang);
+      localStorage.setItem('customShopLang', lang);
       applyTranslations();
     }
 
     function applyTranslations() {
-      const lang = localStorage.getItem('language') || 'zh-TW';
+      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
       const translations = window.i18n[lang];
       if (!translations) return;
 
@@ -270,7 +277,7 @@
 
     // 2. DOM Ready
     document.addEventListener("DOMContentLoaded", () => {
-      const savedLang = localStorage.getItem('language') || 'zh-TW';
+      const savedLang = localStorage.getItem('customShopLang') || 'zh-TW';
       window.setLanguage(savedLang); // 初始語言
       updateDefaultProductsList();
     });
@@ -289,7 +296,7 @@
         const barcode = barcodeBuffer.trim();
         barcodeBuffer = ""; // 清空緩存
 
-        const lang = localStorage.getItem('language') || 'zh-TW';
+        const lang = localStorage.getItem('customShopLang') || 'zh-TW';
 
         if (!barcode) {
           Swal.fire({
@@ -327,7 +334,7 @@
 
     // 4. 手動查詢商品
     document.getElementById("manualQueryBtn").addEventListener("click", async () => {
-      const lang = localStorage.getItem('language') || 'zh-TW';
+      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
       const { value: barcode } = await Swal.fire({
         title: window.i18n[lang].swal.manualQuery.title,
         input: "text",
@@ -370,7 +377,7 @@
 
     // 5. 新增商品
     document.getElementById("addProductBtn").addEventListener("click", () => {
-      const lang = localStorage.getItem('language') || 'zh-TW';
+      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
       Swal.fire({
         title: window.i18n[lang].swal.addProduct.title,
         html: `
@@ -436,7 +443,7 @@
 
     // 6. 更新已掃描商品清單
     function updateScannedProductsList() {
-      const lang = localStorage.getItem('language') || 'zh-TW';
+      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
       const productList = document.getElementById("scannedProducts");
       productList.innerHTML = "";
 
@@ -466,122 +473,108 @@
       });
     }
 
-    // 7. 結帳// 結帳
-document.getElementById("checkoutBtn").addEventListener("click", async () => {
-  const lang = localStorage.getItem('language') || 'zh-TW';
-  if (scannedProducts.length === 0) {
-    Swal.fire({
-      icon: 'error',
-      title: window.i18n[lang].error.title,
-      text: window.i18n[lang].error.noProductsScanned
-    });
-    return;
-  }
-
-  const { value: rfid } = await Swal.fire({
-    title: window.i18n[lang].swal.checkout.title,
-    input: "text",
-    inputLabel: window.i18n[lang].swal.checkout.inputLabel,
-    inputPlaceholder: window.i18n[lang].swal.checkout.inputPlaceholder,
-    showCancelButton: true,
-    confirmButtonText: window.i18n[lang].swal.checkout.confirmButtonText,
-    cancelButtonText: window.i18n[lang].swal.checkout.cancelButtonText,
-    inputValidator: (value) => {
-      if (!value.trim()) {
-        return window.i18n[lang].swal.checkout.validationMessage;
-      }
-    }
-  });
-
-  if (rfid) {
-    const balanceRef = ref(database, `balances/${rfid}/balance`);
-    try {
-      const balanceSnapshot = await get(balanceRef);
-      if (balanceSnapshot.exists()) {
-        const balance = balanceSnapshot.val();
-        const total = scannedProducts.reduce((sum, item) => sum + item.price, 0);
-
-        // 整合商品名稱與數量
-        const productSummary = scannedProducts.reduce((summary, item) => {
-          summary[item.name] = (summary[item.name] || 0) + 1;
-          return summary;
-        }, {});
-
-        // 構建中文商品名稱
-        const productNamesZh = Object.entries(productSummary)
-          .map(([name, count]) => `${name} x${count}`)
-          .join(", ");
-
-        // 構建英文商品名稱
-        const productNamesEn = Object.entries(productSummary)
-          .map(([name, count]) => `${window.i18n['en'].productNameMapping[name] || name} x${count}`)
-          .join(", ");
-
-        // 根據語言選擇顯示商品名稱（中文或英文）
-        const productNames = lang === 'zh-TW' ? productNamesZh : productNamesEn;
-
-        if (balance >= total) {
-          const newBalance = balance - total;
-          await update(ref(database, `balances/${rfid}`), { balance: newBalance });
-
-          // 新增交易記錄（中文）
-          const transactionsRef = ref(database, `transactions/${rfid}`);
-          const transactionDataZh = {
-            amount: -total,
-            timestamp: new Date().toLocaleString(),
-            type: productNamesZh
-          };
-          await push(transactionsRef, transactionDataZh);
-
-          // 新增交易記錄（英文）
-          const transactionsEnRef = ref(database, `transactions-en/${rfid}`);
-          const transactionDataEn = {
-            amount: -total,
-            timestamp: new Date().toLocaleString(),
-            type: productNamesEn
-          };
-          await push(transactionsEnRef, transactionDataEn);
-
-          // 顯示結帳成功彈窗
-          Swal.fire({
-            icon: 'success',
-            title: window.i18n[lang].success.checkoutTitle,
-            html: `
-              ${window.i18n[lang].success.originalBalance}: NT$${balance}<br>
-              ${window.i18n[lang].success.purchasedProducts}: ${productNames}<br>
-              ${window.i18n[lang].success.totalAmount}: NT$${total}<br>
-              ${window.i18n[lang].success.remainingBalance}: NT$${newBalance}
-            `
-          });
-
-          // 清空購物車並更新 UI
-          scannedProducts = [];
-          updateScannedProductsList();
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: window.i18n[lang].error.title,
-            text: window.i18n[lang].error.insufficientBalance
-          });
-        }
-      } else {
+    // 7. 結帳
+    document.getElementById("checkoutBtn").addEventListener("click", async () => {
+      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+      if (scannedProducts.length === 0) {
         Swal.fire({
           icon: 'error',
           title: window.i18n[lang].error.title,
-          text: window.i18n[lang].error.balanceNotFound
+          text: window.i18n[lang].error.noProductsScanned
         });
+        return;
       }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: window.i18n[lang].error.title,
-        text: window.i18n[lang].error.queryFailed.replace("{error}", error.message)
+
+      const { value: rfid } = await Swal.fire({
+        title: window.i18n[lang].swal.checkout.title,
+        input: "text",
+        inputLabel: window.i18n[lang].swal.checkout.inputLabel,
+        inputPlaceholder: window.i18n[lang].swal.checkout.inputPlaceholder,
+        showCancelButton: true,
+        confirmButtonText: window.i18n[lang].swal.checkout.confirmButtonText,
+        cancelButtonText: window.i18n[lang].swal.checkout.cancelButtonText,
+        inputValidator: (value) => {
+          if (!value.trim()) {
+            return window.i18n[lang].swal.checkout.validationMessage;
+          }
+        }
       });
-    }
-  }
-});
 
+      if (rfid) {
+        const balanceRef = ref(database, `balances/${rfid}/balance`);
+        try {
+          const balanceSnapshot = await get(balanceRef);
+          if (balanceSnapshot.exists()) {
+            const balance = balanceSnapshot.val();
+            const total = scannedProducts.reduce((sum, item) => sum + item.price, 0);
 
+            // 整合商品名稱與數量
+            const productSummary = scannedProducts.reduce((summary, item) => {
+              summary[item.name] = (summary[item.name] || 0) + 1;
+              return summary;
+            }, {});
+            let productNames = "";
+            if (lang === 'zh-TW') {
+              productNames = Object.entries(productSummary)
+                .map(([name, count]) => `${name} x${count}`)
+                .join(", ");
+            } else if (lang === 'en') {
+              productNames = Object.entries(productSummary)
+                .map(([name, count]) => `${window.i18n[lang].productNameMapping[name] || name} x${count}`)
+                .join(", ");
+            }
+
+            if (balance >= total) {
+              const newBalance = balance - total;
+              await update(ref(database, `balances/${rfid}`), { balance: newBalance });
+
+              // 新增交易記錄
+              const transactionsRef = ref(database, `transactions/${rfid}`);
+              const transactionData = {
+                amount: -total,
+                timestamp: new Date().toLocaleString(),
+                type: productNames
+              };
+              await set(push(transactionsRef), transactionData);
+
+              // 顯示結帳成功彈窗
+              Swal.fire({
+                icon: 'success',
+                title: window.i18n[lang].success.checkoutTitle,
+                html: `
+                  ${window.i18n[lang].success.originalBalance}: NT$${balance}<br>
+                  ${window.i18n[lang].success.purchasedProducts}: ${productNames}<br>
+                  ${window.i18n[lang].success.totalAmount}: NT$${total}<br>
+                  ${window.i18n[lang].success.remainingBalance}: NT$${newBalance}
+                `
+              });
+
+              // 清空購物車並更新 UI
+              scannedProducts = [];
+              updateScannedProductsList();
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: window.i18n[lang].error.title,
+                text: window.i18n[lang].error.insufficientBalance
+              });
+            }
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: window.i18n[lang].error.title,
+              text: window.i18n[lang].error.balanceNotFound
+            });
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: 'error',
+            title: window.i18n[lang].error.title,
+            text: window.i18n[lang].error.queryFailed.replace("{error}", error.message)
+          });
+        }
+      }
+    });
 
     // 8. 預設商品列表（僅作展示）
     const defaultProducts = [
@@ -594,9 +587,21 @@ document.getElementById("checkoutBtn").addEventListener("click", async () => {
       { barcode: "4710088638984", name: "麥香綠茶", price: 10 }
     ];
 
-    // 9. 更新預設商品列表 UI
+    // 9. 商品名稱英文對照
+    // 將 productNameMapping 移至 i18n 中
+    // const productNameMapping = {
+    //   "可樂果古早味": "Cola Chips Classic",
+    //   "科學麵": "Science Noodles",
+    //   "統一脆麵": "Uni Noodles",
+    //   "科學麵香蔥雞汁風味": "Chicken Flavor Science Noodles",
+    //   "麥香紅茶": "Barley Black Tea",
+    //   "麥香奶茶": "Barley Milk Tea",
+    //   "麥香綠茶": "Barley Green Tea"
+    // };
+
+    // 10. 更新預設商品列表 UI
     function updateDefaultProductsList() {
-      const lang = localStorage.getItem('language') || 'zh-TW';
+      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
       const defaultProductList = document.getElementById("defaultProducts");
       defaultProductList.innerHTML = "";
       defaultProducts.forEach((product) => {
@@ -613,7 +618,6 @@ document.getElementById("checkoutBtn").addEventListener("click", async () => {
       });
     }
 
-    // 10. 預設商品列表 UI 初始化
     document.addEventListener("DOMContentLoaded", () => {
       const modal = document.getElementById("balanceModal");
       if (modal) {
