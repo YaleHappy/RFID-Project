@@ -20,6 +20,7 @@ export const translations = {
       customAmountPlaceholder: "輸入自訂金額",
       indexfoter1: '© 2024安比薩遊樂園。All Rights Reserved.',
       indexfoter2: '聯絡我們：41241211@nfu.edu.tw ｜　41241215@nfu.edu.tw',
+      moneyisbag:"金額過大，請輸入不超過1,000,000。",
 
     },
     'en': {
@@ -44,6 +45,7 @@ export const translations = {
       customAmountPlaceholder: "Enter custom amount",
       indexfoter1: '© 2024 Ambisa Amusement Park. All Rights Reserved.',
       indexfoter2: 'Contact us: 41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw',
+      moneyisbag:"The amount is too large, please enter no more than 1,000,000.",
 
 
     },
