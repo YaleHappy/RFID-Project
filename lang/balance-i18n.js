@@ -31,9 +31,8 @@ export const translations = {
     queryText: "請稍候",
     chartLabel: "交易金額",
     tradelinechart:"交易折線圖",
-    chartTitle: "總餘額折線圖 ",      // Chart.js 的標題
+    chartTitle: "總餘額折線圖",      // Chart.js 的標題
     datasetLabel: "總餘額",          // Chart.js 的資料集標籤
-    chartdivided: "公式=圖表內總餘額/2",      // Chart.js 的標題
     toggleChartBtn: "切換圖表",      // 切換圖表的按鈕
     indexfoter1: '© 2024安比薩遊樂園。All Rights Reserved.',
     indexfoter2: '聯絡我們：41241211@nfu.edu.tw ｜　41241215@nfu.edu.tw',
@@ -81,8 +80,6 @@ export const translations = {
     indexfoter1: '© 2024 Ambisa Amusement Park. All Rights Reserved.',
     indexfoter2: 'Contact us: 41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw',
     clickHint: 'Quickly access transaction records: click this area 5 times.',
-    chartdivided: "Formula =Total balance in the chart/2",      // Chart.js 的標題
-
 
 
 
