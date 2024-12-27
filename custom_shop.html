@@ -243,12 +243,12 @@
 
     // 1. 語言切換 - 暴露到全域
     window.setLanguage = function (lang) {
-      localStorage.setItem('customShopLang', lang);
+      localStorage.setItem('language', lang);
       applyTranslations();
     }
 
     function applyTranslations() {
-      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW';
       const translations = window.i18n[lang];
       if (!translations) return;
 
@@ -270,7 +270,7 @@
 
     // 2. DOM Ready
     document.addEventListener("DOMContentLoaded", () => {
-      const savedLang = localStorage.getItem('customShopLang') || 'zh-TW';
+      const savedLang = localStorage.getItem('language') || 'zh-TW';
       window.setLanguage(savedLang); // 初始語言
       updateDefaultProductsList();
     });
@@ -289,7 +289,7 @@
         const barcode = barcodeBuffer.trim();
         barcodeBuffer = ""; // 清空緩存
 
-        const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+        const lang = localStorage.getItem('language') || 'zh-TW';
 
         if (!barcode) {
           Swal.fire({
@@ -327,7 +327,7 @@
 
     // 4. 手動查詢商品
     document.getElementById("manualQueryBtn").addEventListener("click", async () => {
-      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW';
       const { value: barcode } = await Swal.fire({
         title: window.i18n[lang].swal.manualQuery.title,
         input: "text",
@@ -370,7 +370,7 @@
 
     // 5. 新增商品
     document.getElementById("addProductBtn").addEventListener("click", () => {
-      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW';
       Swal.fire({
         title: window.i18n[lang].swal.addProduct.title,
         html: `
@@ -436,7 +436,7 @@
 
     // 6. 更新已掃描商品清單
     function updateScannedProductsList() {
-      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW';
       const productList = document.getElementById("scannedProducts");
       productList.innerHTML = "";
 
@@ -468,7 +468,7 @@
 
     // 7. 結帳// 結帳
 document.getElementById("checkoutBtn").addEventListener("click", async () => {
-  const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+  const lang = localStorage.getItem('language') || 'zh-TW';
   if (scannedProducts.length === 0) {
     Swal.fire({
       icon: 'error',
@@ -596,7 +596,7 @@ document.getElementById("checkoutBtn").addEventListener("click", async () => {
 
     // 9. 更新預設商品列表 UI
     function updateDefaultProductsList() {
-      const lang = localStorage.getItem('customShopLang') || 'zh-TW';
+      const lang = localStorage.getItem('language') || 'zh-TW';
       const defaultProductList = document.getElementById("defaultProducts");
       defaultProductList.innerHTML = "";
       defaultProducts.forEach((product) => {

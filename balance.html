@@ -1,112 +1,84 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title data-i18n="pagetitle"></title>
-    <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title data-i18n="pagetitle"></title>
+  <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
 
 
-    <!-- Bootstrap -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- 自訂 Navbar 樣式 -->
-    <link href="navbar/navbar.css" rel="stylesheet" />
+  <!-- 自訂 Navbar 樣式 -->
+  <link href="navbar/navbar.css" rel="stylesheet" />
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
-    <style>
-      /* 頁面內其他元素 */
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%; /* 保證整個頁面的高度 */
-        display: flex;
-        flex-direction: column;
-      }
-  
-      /* 主要內容區域 */
-      .content {
-        flex: 1;
-        padding-bottom: 50px; /* 預留空間給 Footer，避免重疊 */
+  <style>
+    /* 頁面內其他元素 */
+    html,
+    body {
+      margin: 0;
+      height: 100%;
+      /* 保證整個頁面的高度 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 主要內容區域 */
+    .content {
+      flex: 1;
+      /* padding-bottom: 50px;
         box-sizing: border-box;
-        min-height: calc(100vh - 100px); /* 確保內容至少填滿視窗高度 */
-      }
-  
-      /* 固定在頁面底部的 Footer */
-      .footer {
-        background-color: #343a40;
-        color: white;
-        text-align: center;
-        padding: 10px 0;
-        width: 100%;
-      }
-    </style>
-  </head>
+        min-height: calc(100vh - 100px); */
+    }
 
-  <body>
-    <nav></nav>
+    .footer {
+      background-color: #343a40;
+      text-align: center;
+      padding: 10px 0;
+      border-top: 1px solid #ddd;
+      bottom: 0;
+      width: 100%;
+      color:white;
+    }
 
-    <div id="navbar-placeholder"></div>
 
-    <!-- 餘額查詢 -->
+ 
+  </style>
+</head>
+
+<body>
+  <nav></nav>
+
+  <div id="navbar-placeholder"></div>
+
+  <div class="content">
     <div class="container py-5">
       <h1 class="text-center mb-4" data-i18n="findwallent"></h1>
-      <div
-        class="alert alert-info text-center"
-        id="promptMessage"
-        data-i18n="promptMessage"
-      >
-      </div>
+      <div class="alert alert-info text-center" id="promptMessage" data-i18n="promptMessage"></div>
       <div id="balanceInfo" class="d-none">
         <h2 class="text-center">
           <span data-i18n="currentBalanceLabel"></span>
           <span id="balanceAmount">$0</span>
         </h2>
-        <!-- 切換圖表按鈕（置中 & 預設隱藏） -->
         <div class="text-center mt-3">
-          <button
-            id="toggleChartBtn"
-            class="btn btn-primary d-none"
-            data-i18n="toggleChartBtn"
-          >
-            
-          </button>
+          <button id="toggleChartBtn" class="btn btn-primary d-none" data-i18n="toggleChartBtn"></button>
         </div>
       </div>
-
-            <!-- 圖表 -->
-            <div class="mt-5 mb-5 d-none" id="chartContainer">
-              <!-- 這個 h3 只是「HTML 上方標題」，也可透過 data-i18n 轉語系 -->
-              <h3 class="text-center" data-i18n="chartTitle"></h3>
-              <canvas id="transactionChart" height="100"></canvas>
-            </div>
-          </div>
-      
-
-      <!-- 錯誤訊息 -->
-      <div
-        id="errorMessage"
-        class="alert alert-danger text-center d-none"
-        data-i18n="errorMessage"
-        role="alert"
-      >
-        
+      <div class="mt-5 mb-5 d-none" id="chartContainer">
+        <h3 class="text-center" data-i18n="chartTitle"></h3>
+        <canvas id="transactionChart" height="100"></canvas>
       </div>
-    </div>
+      <div id="errorMessage" class="alert alert-danger text-center d-none" data-i18n="errorMessage" role="alert"></div>
 
-    <!-- 交易記錄 -->
-    <div class="container">
       <div id="transactionInfo" class="d-none">
-        <h3 class="text-center mt-4" data-i18n="transactionListTitle">
-          
-        </h3>
+        <h3 class="text-center mt-4" data-i18n="transactionListTitle"></h3>
         <table class="table table-striped mt-3">
           <thead>
             <tr>
@@ -118,31 +90,30 @@
           <tbody id="transactionList"></tbody>
         </table>
       </div>
+    </div>
+  </div>
 
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Bootstrap JS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-    ></script>
+  <!-- Firebase & 主要程式 (單一 script) -->
+  <script type="module">
+    // ------------------------
+    // 1) 匯入 Firebase / i18n
+    // ------------------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      off
+    } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+    import { translations } from "./lang/balance-i18n.js";
 
-    <!-- Firebase & 主要程式 (單一 script) -->
-    <script type="module">
-      // ------------------------
-      // 1) 匯入 Firebase / i18n
-      // ------------------------
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
-      import {
-        getDatabase,
-        ref,
-        onValue,
-        off
-      } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
-      import { translations } from "./lang/balance-i18n.js";
-
-      // ---------------------------------------------
-      // 2) 你的 Firebase 設定（請改成有效的憑證）
-      // ---------------------------------------------
-      const firebaseConfig = {
+    // ---------------------------------------------
+    // 2) 你的 Firebase 設定（請改成有效的憑證）
+    // ---------------------------------------------
+    const firebaseConfig = {
       apiKey: "AIzaSyCaaxwc9JqhmezMImhNulzw1_62nPzC7Fc",
       authDomain: "rfid-project-4f420.firebaseapp.com",
       databaseURL: "https://rfid-project-4f420-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -152,452 +123,452 @@
       appId: "1:572151111042:web:db65f49191f977d56d439b"
     };
 
-      // ------------------------
-      // 3) 初始化 Firebase
-      // ------------------------
-      const app = initializeApp(firebaseConfig);
-      const database = getDatabase(app);
+    // ------------------------
+    // 3) 初始化 Firebase
+    // ------------------------
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
 
-      // ------------------------
-      // 4) 全域變數
-      // ------------------------
-      let currentRFID = "";
-      let lastScannedRFID = "";
+    // ------------------------
+    // 4) 全域變數
+    // ------------------------
+    let currentRFID = "";
+    let lastScannedRFID = "";
 
-      // Firebase 監聽器的解除函式
-      let unsubscribeBalance = null;
-      let unsubscribeTransactions = null;
+    // Firebase 監聽器的解除函式
+    let unsubscribeBalance = null;
+    let unsubscribeTransactions = null;
 
-      // Chart.js 實例變數
-      let transactionChart = null;
+    // Chart.js 實例變數
+    let transactionChart = null;
 
-      // ------------------------
-      // 5) 監聽鍵盤事件 (RFID 輸入)
-      // ------------------------
-      document.addEventListener("keydown", (e) => {
-        const lang = localStorage.getItem("language") || "zh-TW";
-        const langPack = translations[lang];
+    // ------------------------
+    // 5) 監聽鍵盤事件 (RFID 輸入)
+    // ------------------------
+    document.addEventListener("keydown", (e) => {
+      const lang = localStorage.getItem("language") || "zh-TW";
+      const langPack = translations[lang];
 
-        if (/^\d$/.test(e.key)) {
-          // 只要是數字就拼上去
-          currentRFID += e.key;
+      if (/^\d$/.test(e.key)) {
+        // 只要是數字就拼上去
+        currentRFID += e.key;
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        Swal.close();
+
+        if (!currentRFID) {
+          Swal.fire({
+            title: langPack.errorTitle,
+            text: langPack.errorText,
+            icon: "error",
+          });
           return;
         }
 
-        if (e.key === "Enter") {
-          e.preventDefault();
-          Swal.close();
+        // 顯示查詢中
+        Swal.fire({
+          title: langPack.queryTitle,
+          text: langPack.queryText,
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+        });
 
-          if (!currentRFID) {
-            Swal.fire({
-              title: langPack.errorTitle,
-              text: langPack.errorText,
-              icon: "error",
-            });
-            return;
-          }
+        setupRealtimeUpdates(currentRFID.trim());
+        lastScannedRFID = currentRFID.trim();
+        currentRFID = "";
+      }
+    });
 
-          // 顯示查詢中
-          Swal.fire({
-            title: langPack.queryTitle,
-            text: langPack.queryText,
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading(),
-          });
+    // ------------------------
+    // 6) 切換圖表顯示/隱藏
+    // ------------------------
+    function toggleChart() {
+      const chartContainer = document.getElementById("chartContainer");
+      if (chartContainer.classList.contains("d-none")) {
+        chartContainer.classList.remove("d-none");
+      } else {
+        chartContainer.classList.add("d-none");
+      }
+    }
 
-          setupRealtimeUpdates(currentRFID.trim());
-          lastScannedRFID = currentRFID.trim();
-          currentRFID = "";
+    // ------------------------
+    // 7) 主要邏輯：根據 rfid 監聽餘額、交易紀錄
+    // ------------------------
+    function setupRealtimeUpdates(rfid) {
+      const lang = localStorage.getItem("language") || "zh-TW";
+      const transactionsPath =
+        lang === "en"
+          ? `transactions-en/${rfid}`
+          : `transactions/${rfid}`;
+
+      const balanceRef = ref(database, `balances/${rfid}`);
+      const transactionsRef = ref(database, transactionsPath);
+
+      // 若已綁定過監聽，先解除
+      if (unsubscribeBalance) unsubscribeBalance();
+      if (unsubscribeTransactions) unsubscribeTransactions();
+
+      unsubscribeBalance = onValue(balanceRef, (snapshot) => {
+        Swal.close();
+        if (snapshot.exists()) {
+          const rawBalance = snapshot.val().balance || snapshot.val();
+          const balance = parseFloat(rawBalance) || 0;
+          document.getElementById("balanceAmount").textContent = `$${balance.toFixed(2)}`;
+          document.getElementById("balanceInfo").classList.remove("d-none");
+
+          // 既然有使用者，那就顯示「切換圖表」按鈕
+          document.getElementById("toggleChartBtn").classList.remove("d-none");
+        } else {
+          // 找不到餘額 → 顯示提示
+          Swal.fire("Tips！", translations[lang].errorMessage, "info");
+          document.getElementById("balanceAmount").textContent = "$0";
+          document.getElementById("balanceInfo").classList.remove("d-none");
+          clearTransactionList();
+          // 沒有使用者就隱藏切換圖表按鈕
+          document.getElementById("toggleChartBtn").classList.add("d-none");
         }
       });
 
-      // ------------------------
-      // 6) 切換圖表顯示/隱藏
-      // ------------------------
-      function toggleChart() {
-        const chartContainer = document.getElementById("chartContainer");
-        if (chartContainer.classList.contains("d-none")) {
-          chartContainer.classList.remove("d-none");
-        } else {
-          chartContainer.classList.add("d-none");
-        }
-      }
-
-      // ------------------------
-      // 7) 主要邏輯：根據 rfid 監聽餘額、交易紀錄
-      // ------------------------
-      function setupRealtimeUpdates(rfid) {
-        const lang = localStorage.getItem("language") || "zh-TW";
-        const transactionsPath =
-          lang === "en"
-            ? `transactions-en/${rfid}`
-            : `transactions/${rfid}`;
-
-        const balanceRef = ref(database, `balances/${rfid}`);
-        const transactionsRef = ref(database, transactionsPath);
-
-        // 若已綁定過監聽，先解除
-        if (unsubscribeBalance) unsubscribeBalance();
-        if (unsubscribeTransactions) unsubscribeTransactions();
-
-        unsubscribeBalance = onValue(balanceRef, (snapshot) => {
-          Swal.close();
-          if (snapshot.exists()) {
-            const rawBalance = snapshot.val().balance || snapshot.val();
-            const balance = parseFloat(rawBalance) || 0;
-            document.getElementById("balanceAmount").textContent = `$${balance.toFixed(2)}`;
-            document.getElementById("balanceInfo").classList.remove("d-none");
-
-            // 既然有使用者，那就顯示「切換圖表」按鈕
-            document.getElementById("toggleChartBtn").classList.remove("d-none");
-          } else {
-            // 找不到餘額 → 顯示提示
-            Swal.fire("Tips！", translations[lang].errorMessage, "info");
-            document.getElementById("balanceAmount").textContent = "$0";
-            document.getElementById("balanceInfo").classList.remove("d-none");
-            clearTransactionList();
-            // 沒有使用者就隱藏切換圖表按鈕
-            document.getElementById("toggleChartBtn").classList.add("d-none");
-          }
-        });
-
-        unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
-          const transactionList = document.getElementById("transactionList");
-          transactionList.innerHTML = "";
-
-          // 先取得「初始餘額」做為累積起點
-          const initBalanceText =
-            document.getElementById("balanceAmount").textContent;
-          const initBalance = parseFloat(initBalanceText.replace("$", "")) || 0;
-          let cumulativeBalance = initBalance;
-
-          // 收集要繪圖的資料（總餘額）
-          const chartLabels = [];
-          const chartData = [];
-          const chartPointColors = [];
-
-          if (snapshot.exists()) {
-            let index = 0;
-            snapshot.forEach((child) => {
-              const { type, amount, timestamp } = child.val();
-              const localTime = parseLocalizedTimestamp(timestamp);
-
-              // 更新列表
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                <td>${type || "未定義"}</td>
-                <td>$${(amount || 0).toFixed(2)}</td>
-                <td>${localTime}</td>
-              `;
-              transactionList.appendChild(row);
-
-              // 逐筆累加
-              cumulativeBalance += (amount || 0);
-
-              // ★★ 改成「若本次交易 amount < 0 就紅，否則綠」
-              if (amount < 0) {
-                chartPointColors.push("red");
-              } else {
-                chartPointColors.push("green");
-              }
-
-              chartLabels.push(`#${++index}`);
-              chartData.push(cumulativeBalance);
-            });
-
-            document.getElementById("transactionInfo").classList.remove("d-none");
-
-            // 建立 / 更新圖表（帶入「總餘額」數據）
-            createOrUpdateChart(chartLabels, chartData, chartPointColors);
-          } else {
-            clearTransactionList();
-          }
-        });
-
-        // 綁定按鈕事件（若已經綁定就不用重複）
-        document
-          .getElementById("toggleChartBtn")
-          .addEventListener("click", toggleChart);
-      }
-
-      // ------------------------
-      // 8) 建立或更新 Chart.js 圖表
-      // ------------------------
-      function createOrUpdateChart(labels, data, pointColors) {
-  // 1) 取得當前語言，或你也可把它做為參數直接傳進來
-  const lang = localStorage.getItem("language") || "zh-TW";
-  // 2) 從 translations 撈出對應字串
-  const chartTitleStr = translations[lang]?.chartdivided || "總餘額折線圖";
-  const datasetLabelStr = translations[lang]?.datasetLabel || "總餘額";
-
-  const chartContainer = document.getElementById("chartContainer");
-  chartContainer.classList.remove("d-none");
-
-  const ctx = document.getElementById("transactionChart").getContext("2d");
-
-  if (transactionChart) {
-    // 3) 若圖表已存在，就更新資料及標題、標籤
-    transactionChart.data.labels = labels;
-    transactionChart.data.datasets[0].data = data;
-    transactionChart.data.datasets[0].pointBackgroundColor = pointColors;
-    // ★★ 重點：更新標題與資料集標籤
-    transactionChart.data.datasets[0].label = datasetLabelStr;
-    transactionChart.options.plugins.title.text = chartTitleStr;
-    // 4) 重新繪製圖表
-    transactionChart.update();
-
-  } else {
-    // 若圖表尚未建立，則使用當前語言的設定直接建一個新的
-    transactionChart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: datasetLabelStr,    // ← 套用多語
-            data: data,
-            borderColor: "#007bff",
-            backgroundColor: "rgba(0, 123, 255, 0.1)",
-            pointBackgroundColor: pointColors,
-            tension: 0.1,
-            pointRadius: 10,
-            pointHoverRadius: 12,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          title: {
-            display: true,
-            text: chartTitleStr,       // ← 套用多語
-          },
-        },
-        scales: {
-          x: { display: true },
-          y: { display: true, beginAtZero: true },
-        },
-      },
-    });
-  }
-}
-
-      // ------------------------
-      // 9) 清空交易紀錄列表
-      // ------------------------
-      function clearTransactionList() {
+      unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
         const transactionList = document.getElementById("transactionList");
         transactionList.innerHTML = "";
-        document.getElementById("transactionInfo").classList.add("d-none");
 
-        // 清空或隱藏圖表
-        const chartContainer = document.getElementById("chartContainer");
-        chartContainer.classList.add("d-none");
-        if (transactionChart) {
-          transactionChart.destroy();
-          transactionChart = null;
-        }
-      }
+        // 先取得「初始餘額」做為累積起點
+        const initBalanceText =
+          document.getElementById("balanceAmount").textContent;
+        const initBalance = parseFloat(initBalanceText.replace("$", "")) || 0;
+        let cumulativeBalance = initBalance;
 
-      // ------------------------
-      // 10) 本地化時間
-      // ------------------------
-      function parseLocalizedTimestamp(localizedTimestamp, langOverride) {
-        const lang = langOverride || localStorage.getItem("language") || "zh-TW";
-        // 針對 "YYYY/MM/DD 上午HH:MM:SS" 格式做解析
-        const match = localizedTimestamp?.match(
-          /(\d{4})\/(\d{2})\/(\d{2})\s+(上午|下午)(\d{1,2}):(\d{2}):(\d{2})/
-        );
-        if (!match) return "Invalid Date";
+        // 收集要繪圖的資料（總餘額）
+        const chartLabels = [];
+        const chartData = [];
+        const chartPointColors = [];
 
-        const [_, year, month, day, period, hour, minute, second] = match;
-        let parsedHour = parseInt(hour, 10);
+        if (snapshot.exists()) {
+          let index = 0;
+          snapshot.forEach((child) => {
+            const { type, amount, timestamp } = child.val();
+            const localTime = parseLocalizedTimestamp(timestamp);
 
-        // 轉換上午/下午 → 24小時制
-        if (period === "下午" && parsedHour < 12) {
-          parsedHour += 12;
-        } else if (period === "上午" && parsedHour === 12) {
-          parsedHour = 0;
-        }
-        const formattedDate = new Date(
-          parseInt(year, 10),
-          parseInt(month, 10) - 1,
-          parseInt(day, 10),
-          parsedHour,
-          parseInt(minute, 10),
-          parseInt(second, 10)
-        );
-
-        // 根據語系顯示
-        if (lang === "en") {
-          return formattedDate.toLocaleString("en-US", { hour12: true });
-        }
-        return formattedDate.toLocaleString("zh-TW");
-      }
-
-      // ------------------------
-      // 11) 切換語言 (如需)
-      // ------------------------
-      function setLanguage(lang) {
-        if (!translations[lang]) {
-          console.error("No i18n data for:", lang);
-          return;
-        }
-        // 1) 批次更新所有 data-i18n
-        document.querySelectorAll("[data-i18n]").forEach((el) => {
-          const key = el.getAttribute("data-i18n");
-          if (translations[lang][key]) {
-            el.textContent = translations[lang][key];
-          }
-        });
-        localStorage.setItem("language", lang);
-
-        // 2) 若上次查過卡號，更新列表 (會重繪表格 & 圖表)
-        if (lastScannedRFID) {
-          updateTransactionList(lastScannedRFID, lang);
-        }
-
-        // 3) 若圖表已存在，也可更新圖表標籤 (標題、dataset label)
-        if (transactionChart) {
-          // 動態改標題、Dataset 標籤
-          if (translations[lang].chartTitle) {
-            transactionChart.options.plugins.title.text =
-              translations[lang].chartTitle;
-          }
-          if (translations[lang].datasetLabel) {
-            transactionChart.data.datasets[0].label =
-              translations[lang].datasetLabel;
-          }
-          // 立即更新圖表
-          transactionChart.update();
-        }
-      }
-      window.setLanguage = setLanguage;
-
-      // 只更新交易列表 (語言切換) - 若有需要
-      function updateTransactionList(rfid, lang) {
-        const transactionsPath =
-          lang === "en" ? `transactions-en/${rfid}` : `transactions/${rfid}`;
-        const transactionsRef = ref(database, transactionsPath);
-
-        if (unsubscribeTransactions) {
-          unsubscribeTransactions();
-        }
-
-        unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
-          const transactionList = document.getElementById("transactionList");
-          transactionList.innerHTML = "";
-
-          const initBalanceText =
-            document.getElementById("balanceAmount").textContent;
-          const initBalance = parseFloat(initBalanceText.replace("$", "")) || 0;
-          let cumulativeBalance = initBalance;
-
-          const chartLabels = [];
-          const chartData = [];
-          const chartPointColors = [];
-
-          if (snapshot.exists()) {
-            let index = 0;
-            snapshot.forEach((child) => {
-              const { type, amount, timestamp } = child.val();
-              // 改用 parseLocalizedTimestamp() 第 2 參數指定語系
-              const localTime = parseLocalizedTimestamp(timestamp, lang);
-
-              const row = document.createElement("tr");
-              row.innerHTML = `
+            // 更新列表
+            const row = document.createElement("tr");
+            row.innerHTML = `
                 <td>${type || "未定義"}</td>
                 <td>$${(amount || 0).toFixed(2)}</td>
                 <td>${localTime}</td>
               `;
-              transactionList.appendChild(row);
+            transactionList.appendChild(row);
 
-              cumulativeBalance += (amount || 0);
+            // 逐筆累加
+            cumulativeBalance += (amount || 0);
 
-              if (amount < 0) {
-                chartPointColors.push("red");
-              } else {
-                chartPointColors.push("green");
-              }
+            // ★★ 改成「若本次交易 amount < 0 就紅，否則綠」
+            if (amount < 0) {
+              chartPointColors.push("red");
+            } else {
+              chartPointColors.push("green");
+            }
 
-              chartLabels.push(`#${++index}`);
-              chartData.push(cumulativeBalance);
-            });
+            chartLabels.push(`#${++index}`);
+            chartData.push(cumulativeBalance);
+          });
 
-            document.getElementById("transactionInfo").classList.remove("d-none");
-            createOrUpdateChart(chartLabels, chartData, chartPointColors);
-          } else {
-            clearTransactionList();
-          }
+          document.getElementById("transactionInfo").classList.remove("d-none");
+
+          // 建立 / 更新圖表（帶入「總餘額」數據）
+          createOrUpdateChart(chartLabels, chartData, chartPointColors);
+        } else {
+          clearTransactionList();
+        }
+      });
+
+      // 綁定按鈕事件（若已經綁定就不用重複）
+      document
+        .getElementById("toggleChartBtn")
+        .addEventListener("click", toggleChart);
+    }
+
+    // ------------------------
+    // 8) 建立或更新 Chart.js 圖表
+    // ------------------------
+    function createOrUpdateChart(labels, data, pointColors) {
+      // 1) 取得當前語言，或你也可把它做為參數直接傳進來
+      const lang = localStorage.getItem("language") || "zh-TW";
+      // 2) 從 translations 撈出對應字串
+      const chartTitleStr = translations[lang]?.chartdivided || "總餘額折線圖";
+      const datasetLabelStr = translations[lang]?.datasetLabel || "總餘額";
+
+      const chartContainer = document.getElementById("chartContainer");
+      chartContainer.classList.remove("d-none");
+
+      const ctx = document.getElementById("transactionChart").getContext("2d");
+
+      if (transactionChart) {
+        // 3) 若圖表已存在，就更新資料及標題、標籤
+        transactionChart.data.labels = labels;
+        transactionChart.data.datasets[0].data = data;
+        transactionChart.data.datasets[0].pointBackgroundColor = pointColors;
+        // ★★ 重點：更新標題與資料集標籤
+        transactionChart.data.datasets[0].label = datasetLabelStr;
+        transactionChart.options.plugins.title.text = chartTitleStr;
+        // 4) 重新繪製圖表
+        transactionChart.update();
+
+      } else {
+        // 若圖表尚未建立，則使用當前語言的設定直接建一個新的
+        transactionChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: datasetLabelStr,    // ← 套用多語
+                data: data,
+                borderColor: "#007bff",
+                backgroundColor: "rgba(0, 123, 255, 0.1)",
+                pointBackgroundColor: pointColors,
+                tension: 0.1,
+                pointRadius: 10,
+                pointHoverRadius: 12,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              title: {
+                display: true,
+                text: chartTitleStr,       // ← 套用多語
+              },
+            },
+            scales: {
+              x: { display: true },
+              y: { display: true, beginAtZero: true },
+            },
+          },
         });
       }
-      // ------------------------
-    </script>
+    }
 
-    <!-- 動態載入 Navbar -->
-    <script type="module">
-      async function loadNavbar() {
-        try {
-          const response = await fetch("navbar.html");
-          if (response.ok) {
-            const navbarHTML = await response.text();
-            document.getElementById("navbar-placeholder").innerHTML = navbarHTML;
+    // ------------------------
+    // 9) 清空交易紀錄列表
+    // ------------------------
+    function clearTransactionList() {
+      const transactionList = document.getElementById("transactionList");
+      transactionList.innerHTML = "";
+      document.getElementById("transactionInfo").classList.add("d-none");
 
-            const savedLang = localStorage.getItem("language") || "zh-TW";
-            setLanguage(savedLang);
-          } else {
-            console.error("無法加載導航欄：", response.status);
-          }
-        } catch (error) {
-          console.error("加載導航欄時出錯：", error);
-        }
+      // 清空或隱藏圖表
+      const chartContainer = document.getElementById("chartContainer");
+      chartContainer.classList.add("d-none");
+      if (transactionChart) {
+        transactionChart.destroy();
+        transactionChart = null;
       }
-      loadNavbar();
-
-      
-    </script>
-
-<footer class="footer">
-  <p data-i18n="indexfoter1"></p>
-  <p data-i18n="indexfoter2"></p>
-  <p data-i18n="clickHint"></p>
-</footer>
-
-<script>
-  let clickCount = 0;
-  let clickTimer = null;
-
-  // 為 footer 區域添加點擊事件
-  document.querySelector('.footer').addEventListener('click', () => {
-    clickCount++;
-
-    // 如果在 1.5 秒內點擊了 5 次，跳轉到指定頁面
-    if (clickCount === 5) {
-      window.location.href = 'today-transactions.html';
-      resetClickCounter();
-      return;
     }
 
-    // 如果超過 1.5 秒未達到 5 次點擊，重置計數
-    if (!clickTimer) {
-      clickTimer = setTimeout(() => {
+    // ------------------------
+    // 10) 本地化時間
+    // ------------------------
+    function parseLocalizedTimestamp(localizedTimestamp, langOverride) {
+      const lang = langOverride || localStorage.getItem("language") || "zh-TW";
+      // 針對 "YYYY/MM/DD 上午HH:MM:SS" 格式做解析
+      const match = localizedTimestamp?.match(
+        /(\d{4})\/(\d{2})\/(\d{2})\s+(上午|下午)(\d{1,2}):(\d{2}):(\d{2})/
+      );
+      if (!match) return "Invalid Date";
+
+      const [_, year, month, day, period, hour, minute, second] = match;
+      let parsedHour = parseInt(hour, 10);
+
+      // 轉換上午/下午 → 24小時制
+      if (period === "下午" && parsedHour < 12) {
+        parsedHour += 12;
+      } else if (period === "上午" && parsedHour === 12) {
+        parsedHour = 0;
+      }
+      const formattedDate = new Date(
+        parseInt(year, 10),
+        parseInt(month, 10) - 1,
+        parseInt(day, 10),
+        parsedHour,
+        parseInt(minute, 10),
+        parseInt(second, 10)
+      );
+
+      // 根據語系顯示
+      if (lang === "en") {
+        return formattedDate.toLocaleString("en-US", { hour12: true });
+      }
+      return formattedDate.toLocaleString("zh-TW");
+    }
+
+    // ------------------------
+    // 11) 切換語言 (如需)
+    // ------------------------
+    function setLanguage(lang) {
+      if (!translations[lang]) {
+        console.error("No i18n data for:", lang);
+        return;
+      }
+      // 1) 批次更新所有 data-i18n
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        if (translations[lang][key]) {
+          el.textContent = translations[lang][key];
+        }
+      });
+      localStorage.setItem("language", lang);
+
+      // 2) 若上次查過卡號，更新列表 (會重繪表格 & 圖表)
+      if (lastScannedRFID) {
+        updateTransactionList(lastScannedRFID, lang);
+      }
+
+      // 3) 若圖表已存在，也可更新圖表標籤 (標題、dataset label)
+      if (transactionChart) {
+        // 動態改標題、Dataset 標籤
+        if (translations[lang].chartTitle) {
+          transactionChart.options.plugins.title.text =
+            translations[lang].chartTitle;
+        }
+        if (translations[lang].datasetLabel) {
+          transactionChart.data.datasets[0].label =
+            translations[lang].datasetLabel;
+        }
+        // 立即更新圖表
+        transactionChart.update();
+      }
+    }
+    window.setLanguage = setLanguage;
+
+    // 只更新交易列表 (語言切換) - 若有需要
+    function updateTransactionList(rfid, lang) {
+      const transactionsPath =
+        lang === "en" ? `transactions-en/${rfid}` : `transactions/${rfid}`;
+      const transactionsRef = ref(database, transactionsPath);
+
+      if (unsubscribeTransactions) {
+        unsubscribeTransactions();
+      }
+
+      unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
+        const transactionList = document.getElementById("transactionList");
+        transactionList.innerHTML = "";
+
+        const initBalanceText =
+          document.getElementById("balanceAmount").textContent;
+        const initBalance = parseFloat(initBalanceText.replace("$", "")) || 0;
+        let cumulativeBalance = initBalance;
+
+        const chartLabels = [];
+        const chartData = [];
+        const chartPointColors = [];
+
+        if (snapshot.exists()) {
+          let index = 0;
+          snapshot.forEach((child) => {
+            const { type, amount, timestamp } = child.val();
+            // 改用 parseLocalizedTimestamp() 第 2 參數指定語系
+            const localTime = parseLocalizedTimestamp(timestamp, lang);
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${type || "未定義"}</td>
+                <td>$${(amount || 0).toFixed(2)}</td>
+                <td>${localTime}</td>
+              `;
+            transactionList.appendChild(row);
+
+            cumulativeBalance += (amount || 0);
+
+            if (amount < 0) {
+              chartPointColors.push("red");
+            } else {
+              chartPointColors.push("green");
+            }
+
+            chartLabels.push(`#${++index}`);
+            chartData.push(cumulativeBalance);
+          });
+
+          document.getElementById("transactionInfo").classList.remove("d-none");
+          createOrUpdateChart(chartLabels, chartData, chartPointColors);
+        } else {
+          clearTransactionList();
+        }
+      });
+    }
+    // ------------------------
+  </script>
+
+  <!-- 動態載入 Navbar -->
+  <script type="module">
+    async function loadNavbar() {
+      try {
+        const response = await fetch("navbar.html");
+        if (response.ok) {
+          const navbarHTML = await response.text();
+          document.getElementById("navbar-placeholder").innerHTML = navbarHTML;
+
+          const savedLang = localStorage.getItem("language") || "zh-TW";
+          setLanguage(savedLang);
+        } else {
+          console.error("無法加載導航欄：", response.status);
+        }
+      } catch (error) {
+        console.error("加載導航欄時出錯：", error);
+      }
+    }
+    loadNavbar();
+
+
+  </script>
+
+  <footer class="footer">
+    <p data-i18n="indexfoter1"></p>
+    <p data-i18n="indexfoter2"></p>
+    <p data-i18n="clickHint"></p>
+  </footer>
+
+  <script>
+    let clickCount = 0;
+    let clickTimer = null;
+
+    // 為 footer 區域添加點擊事件
+    document.querySelector('.footer').addEventListener('click', () => {
+      clickCount++;
+
+      // 如果在 1.5 秒內點擊了 5 次，跳轉到指定頁面
+      if (clickCount === 5) {
+        window.location.href = 'today-transactions.html';
         resetClickCounter();
-      }, 1500); // 1.5 秒計時
+        return;
+      }
+
+      // 如果超過 1.5 秒未達到 5 次點擊，重置計數
+      if (!clickTimer) {
+        clickTimer = setTimeout(() => {
+          resetClickCounter();
+        }, 1500); // 1.5 秒計時
+      }
+    });
+
+    // 重置點擊計數器
+    function resetClickCounter() {
+      clickCount = 0;
+      clearTimeout(clickTimer);
+      clickTimer = null;
     }
-  });
-
-  // 重置點擊計數器
-  function resetClickCounter() {
-    clickCount = 0;
-    clearTimeout(clickTimer);
-    clickTimer = null;
-  }
-</script>
+  </script>
 
 
 
-  </body>
+</body>
 
-  
+
 
 </html>
