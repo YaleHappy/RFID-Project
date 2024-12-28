@@ -1,5 +1,6 @@
 window.i18n = {
     "zh-TW": {
+      title: "美食街",
       currentLang: "中文",
       header: {
         title: "美食街"
@@ -40,6 +41,7 @@ window.i18n = {
     },
   
     "en": {
+      title: "Food Court",
       currentLang: "English",
       header: {
         title: "Food Court"
