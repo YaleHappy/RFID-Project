@@ -4,18 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>美食街</title>
+    <title data-i18n="title"></title>
 
     <!-- 載入 i18n 字典 -->
     <script src="lang/food_court-i18n.js"></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
+
 
     <!-- 新增彈窗的 HTML -->
     <div id="balanceModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 data-i18n="modal.insufficientBalance">餘額不足</h2>
+            <h2 data-i18n="modal.insufficientBalance"></h2>
             <a href="top-up.html">
-                <button data-i18n="modal.goTopUp">前往儲值</button>
+                <button data-i18n="modal.goTopUp"></button>
             </a>
         </div>
     </div>
@@ -846,9 +848,9 @@
     <header>
         <h1 data-i18n="header.title">美食街</h1>
         <nav>
-            <a href="check-in.html" data-i18n="nav.checkIn">檢票出口</a>
-            <a href="top-up.html" data-i18n="nav.topUp">儲值</a>
-            <a href="balance.html" data-i18n="nav.balance">查詢餘額</a>
+            <a href="check-in.html" data-i18n="nav.checkIn"></a>
+            <a href="top-up.html" data-i18n="nav.topUp"></a>
+            <a href="balance.html" data-i18n="nav.balance"></a>
 
             <!-- 語言切換按鈕 -->
             <div class="dropdown" style="margin-left: 20px; position: relative;">
@@ -868,36 +870,36 @@
     <div class="container">
         <div class="product">
             <img src="https://www.tkkinc.com.tw/upload/food/b65e48801219bb7eae9c4986aef8680fc.png" alt="商品圖片">
-            <h3 data-i18n="product.mediumDrink">中杯飲料</h3>
+            <h3 data-i18n="product.mediumDrink"></h3>
             <p>$50</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '中杯飲料', 50)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '中杯飲料', 50)"></button>
         </div>
         <div class="product">
             <img src="https://media.zenfs.com/ko/babyou_nownews_com_883/d80749671da458f8fdf761491688f937" alt="商品圖片">
-            <h3 data-i18n="product.largeDrink">大杯飲料</h3>
+            <h3 data-i18n="product.largeDrink"></h3>
             <p>$70</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '大杯飲料', 70)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '大杯飲料', 70)"></button>
         </div>
         <div class="product">
             <img src="https://i1.momoshop.com.tw/1693092483/goodsimg/0009/159/583/9159583_R_m.webp" alt="商品圖片">
-            <h3 data-i18n="product.hotDog">美式熱狗</h3>
+            <h3 data-i18n="product.hotDog"></h3>
             <p>$49</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '美式熱狗', 49)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '美式熱狗', 49)"></button>
         </div>
     </div>
 
@@ -905,37 +907,37 @@
         <div class="product">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGltkJBxsrVCiBsfCwD5jbxqbka8PnzrC_ug&s"
                 alt="商品圖片">
-            <h3 data-i18n="product.hotDogBun">美式熱狗堡</h3>
+            <h3 data-i18n="product.hotDogBun"></h3>
             <p>$79</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '美式熱狗堡', 79)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '美式熱狗堡', 79)"></button>
         </div>
         <div class="product">
             <img src="https://achingfoodie.tw/wp-content/uploads/20211205002431_98.jpg" alt="商品圖片">
-            <h3 data-i18n="product.chickenNuggets">麥克雞塊4塊</h3>
+            <h3 data-i18n="product.chickenNuggets"></h3>
             <p>$49</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '麥克雞塊4塊', 49)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '麥克雞塊4塊', 49)"></button>
         </div>
         <div class="product">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXLE-T2rBJxNj3jY_AgSnJD8OBkxg_ZVggbw&s"
                 alt="商品圖片">
-            <h3 data-i18n="product.friedChickenWings">炸雞翅</h3>
+            <h3 data-i18n="product.friedChickenWings"></h3>
             <p>$49</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '炸雞翅', 49)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '炸雞翅', 49)"></button>
         </div>
     </div>
 
@@ -943,26 +945,26 @@
         <div class="product">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4a-PCojK_jwdBJexoaOE7mEf_kmrT-nhIbQ&s"
                 alt="商品圖片">
-            <h3 data-i18n="product.spaghetti">義大利麵</h3>
+            <h3 data-i18n="product.spaghetti"></h3>
             <p>$159</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '義大利麵', 159)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '義大利麵', 159)"></button>
         </div>
         <div class="product">
             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdWhiaQ7UkKHnp7Aa7qlMOa3M1Iva2uJTNmg&s"
                 alt="商品圖片">
-            <h3 data-i18n="product.beefNoodles">牛肉麵</h3>
+            <h3 data-i18n="product.beefNoodles"></h3>
             <p>$179</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '牛肉麵', 179)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '牛肉麵', 179)"></button>
         </div>
     </div>
 
@@ -973,9 +975,9 @@
 
     <!-- 購物車側邊欄 -->
     <div class="cart-sidebar">
-        <h2 data-i18n="cart">購物車</h2>
+        <h2 data-i18n="cart"></h2>
         <div class="cart-items"></div>
-        <button class="checkout-btn" data-i18n="checkout" onclick="checkout()">結帳</button>
+        <button class="checkout-btn" data-i18n="checkout" onclick="checkout()"></button>
     </div>
 
 </body>

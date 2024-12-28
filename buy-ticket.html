@@ -4,9 +4,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="pageTitle">購票系統</title>
+  <title data-i18n="pageTitle"></title>
   <!-- 引入 Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
+
 
   <style>
     select.ticket-type {
@@ -14,30 +16,29 @@
       visibility: visible;
     }
 
-/* 確保頁面內其他元素不影響 footer 的定位 */
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%; /* 保證內容的佔位高度 */
-}
+    /* 確保頁面內其他元素不影響 footer 的定位 */
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%; /* 保證內容的佔位高度 */
+    }
 
-/* Footer 固定樣式 */
-.footer {
-  position: fixed; /* 固定在視窗位置 */
-  bottom: 0; /* 垂直位置設為最底部 */
-  width: 100%; /* 寬度拉滿整個視窗 */
-  background-color: #343a40; /* 深灰背景 */
-  color: white; /* 白色文字 */
-  text-align: center; /* 文字置中 */
-  padding: 10px 0; /* 適當內距 */
-  z-index: 1000; /* 保證不被其他內容遮擋 */
-}
+    /* Footer 固定樣式 */
+    .footer {
+      position: fixed; /* 固定在視窗位置 */
+      bottom: 0; /* 垂直位置設為最底部 */
+      width: 100%; /* 寬度拉滿整個視窗 */
+      background-color: #343a40; /* 深灰背景 */
+      color: white; /* 白色文字 */
+      text-align: center; /* 文字置中 */
+      padding: 10px 0; /* 適當內距 */
+      z-index: 1000; /* 保證不被其他內容遮擋 */
+    }
 
-/* 頁面主要內容 */
-.content {
-  padding-bottom: 50px; /* 留出 footer 的高度空間，避免內容被遮住 */
-}
-
+    /* 頁面主要內容 */
+    .content {
+      padding-bottom: 50px; /* 留出 footer 的高度空間，避免內容被遮住 */
+    }
   </style>
 </head>
 
@@ -47,42 +48,37 @@ body, html {
 
   <!-- 購票與儲值表單 -->
   <div class="container py-5">
-    <h1 class="text-center mb-4" data-i18n="formTitle">購票系統</h1>
+    <h1 class="text-center mb-4" data-i18n="formTitle"></h1>
     <form id="ticketForm">
       <div id="userList">
         <!-- 初始輸入框 -->
         <div class="row mb-3 user-entry" data-initial="true">
           <div class="col-md-6">
-            <input type="text" class="form-control user-name " data-i18n-placeholder="inputName" placeholder="輸入姓名">
+            <input type="text" class="form-control user-name" data-i18n-placeholder="inputName" placeholder="輸入姓名">
           </div>
           <div class="col-md-4">
             <select class="form-select ticket-type">
-              <option value="100" data-i18n="adultTicket">成人票 - $100</option>
-              <option value="50" data-i18n="childTicket">兒童票 - $50</option>
+              <option value="100" data-i18n="adultTicket"></option>
+              <option value="50" data-i18n="childTicket"></option>
             </select>
           </div>
           <div class="col-md-2">
-            <button type="button" class="btn btn-danger remove-user" disabled data-i18n="removeButton">刪除</button>
+            <button type="button" class="btn btn-danger remove-user" disabled data-i18n="removeButton"></button>
           </div>
         </div>
       </div>
-      <button type="button" class="btn btn-primary mb-3" id="addUser" data-i18n="addUserButton">新增購票人</button>
+      <button type="button" class="btn btn-primary mb-3" id="addUser" data-i18n="addUserButton"></button>
 
       <div class="alert alert-info text-center" data-i18n="promptMessage" id="promptMessage">
-        請讀取您的 RFID 卡片完成購票。
       </div>
     </form>
     <div id="successMessage" class="alert alert-success text-center d-none" role="alert" data-i18n="successMessage">
-      資料已成功儲存至 Firebase！購票資訊已更新。
     </div>
     <div id="errorMessage" class="alert alert-danger text-center d-none" role="alert" data-i18n="errorMessage">
-      餘額不足或找不到卡片，請先儲值！
     </div>
   </div>
 
-
   <!-- 引入 Bootstrap JS 和 Firebase -->
-
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
@@ -102,40 +98,34 @@ body, html {
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
 
-
     document.addEventListener("DOMContentLoaded", () => {
       const userList = document.getElementById("userList");
       const successMessage = document.getElementById("successMessage");
       const errorMessage = document.getElementById("errorMessage");
-      const promptMessage = document.getElementById("promptMessage")
+      const promptMessage = document.getElementById("promptMessage");
 
       // 新增購票人按鈕邏輯
       document.getElementById("addUser").addEventListener("click", () => {
         const userEntry = document.createElement("div");
         userEntry.className = "row mb-3 user-entry";
         userEntry.innerHTML = `
-    <div class="col-md-6">
-      <input type="text" class="form-control user-name" data-i18n-placeholder="inputName" placeholder="輸入姓名">
-    </div>
-    <div class="col-md-4">
-      <select class="form-select ticket-type">
-        <option value="100" data-i18n="adultTicket">成人票 - $100</option>
-        <option value="50" data-i18n="childTicket">兒童票 - $50</option>
-      </select>
-    </div>
-    <div class="col-md-2">
-      <button type="button" class="btn btn-danger remove-user" data-i18n="removeButton">刪除</button>
-    </div>
-  `;
+          <div class="col-md-6">
+            <input type="text" class="form-control user-name" data-i18n-placeholder="inputName" placeholder="輸入姓名">
+          </div>
+          <div class="col-md-4">
+            <select class="form-select ticket-type">
+              <option value="100" data-i18n="adultTicket">成人票 - $100</option>
+              <option value="50" data-i18n="childTicket">兒童票 - $50</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <button type="button" class="btn btn-danger remove-user" data-i18n="removeButton">刪除</button>
+          </div>
+        `;
         userList.appendChild(userEntry);
-
 
         const displayMessage = (type, content) => {
           // 隱藏所有訊息框
-          const successMessage = document.getElementById("successMessage");
-          const errorMessage = document.getElementById("errorMessage");
-          const promptMessage = document.getElementById("promptMessage");
-
           successMessage.classList.add("d-none");
           errorMessage.classList.add("d-none");
           promptMessage.classList.add("d-none");
@@ -152,8 +142,6 @@ body, html {
             promptMessage.classList.remove("d-none");
           }
         };
-
-
 
         // 更新語言翻譯
         updateLanguageForNewElements(userEntry);
@@ -186,10 +174,9 @@ body, html {
     // RFID 卡片讀取
     let rfidBuffer = "";
     const ticketTypeMapping = {
-      100: { "zh-TW": "成人票 - 100", "en": "Adult Ticket - $100" },
-      50: { "zh-TW": "兒童票 - 50 元", "en": "Child Ticket - $50" }
+      100: { "zh-TW": "成人票 - $100", "en": "Adult Ticket - $100" },
+      50: { "zh-TW": "兒童票 - $50 元", "en": "Child Ticket - $50" }
     };
-
 
     document.addEventListener("keydown", async (e) => {
       if (e.target.classList.contains("user-name")) return;
@@ -236,20 +223,20 @@ body, html {
           return;
         }
 
-        const balanceRef = ref(database, `balances/${rfid}`);
+        const balanceRef = ref(database, `balances/${rfid}/balance`);
         const ticketsRef = ref(database, `tickets/${rfid}`);
         const transactionsRef = ref(database, `transactions/${rfid}`);
         const transactions1Ref = ref(database, `transactions-en/${rfid}`);
-
 
         try {
           const balanceSnapshot = await get(balanceRef);
           let currentBalance = 0;
 
           if (balanceSnapshot.exists()) {
-            currentBalance = parseInt(balanceSnapshot.val().balance || balanceSnapshot.val(), 10);
+            const balanceVal = balanceSnapshot.val().balance || balanceSnapshot.val();
+            currentBalance = typeof balanceVal === 'number' ? balanceVal : Number(balanceVal);
           } else {
-            errorMessage.textContent = savedLang === 'zh-TW' ? "找不到卡片餘額資訊，請重新嘗試。" : "Card balance not found, please try again.";
+            errorMessage.textContent = savedLang === 'zh-TW' ? "找不到卡片餘額資訊，請先儲值或重新嘗試。" : "Card balance not found, please top-up or try again.";
             errorMessage.classList.remove("d-none");
             ticketForm.classList.remove("disabled");
             promptMessage.textContent = savedLang === 'zh-TW' ? "請讀取您的 RFID 卡片完成購票。" : "Please scan your RFID card to complete the purchase.";
@@ -303,16 +290,16 @@ body, html {
             })
             .join("<br>");
 
-
+          const formattedCurrentBalance = currentBalance.toLocaleString();
+          const formattedNewBalance = newBalance.toLocaleString();
 
           const successMessage = `
-  <strong>${lang === 'zh-TW' ? '原本餘額' : 'Original Balance'}:</strong>  ${currentBalance}<br>
-  <strong>${lang === 'zh-TW' ? '購買內容' : 'Purchase Details'}:</strong><br>${purchaseDetails}<br>
-  <strong>${lang === 'zh-TW' ? '剩餘餘額' : 'Remaining Balance'}:</strong>  ${newBalance}
-`;
+            <strong>${lang === 'zh-TW' ? '原本餘額' : 'Original Balance'}:</strong>  ${formattedCurrentBalance}<br>
+            <strong>${lang === 'zh-TW' ? '購買內容' : 'Purchase Details'}:</strong><br>${purchaseDetails}<br>
+            <strong>${lang === 'zh-TW' ? '剩餘餘額' : 'Remaining Balance'}:</strong>  ${formattedNewBalance}
+          `;
 
           successElement.innerHTML = successMessage;
-          successElement.classList.remove("d-none");
           successElement.classList.remove("d-none");
           ticketForm.classList.remove("disabled");
           document.getElementById("ticketForm").reset();
@@ -334,9 +321,6 @@ body, html {
         e.preventDefault();
       }
     });
-
-
-
 
   </script>
   <script>
@@ -430,8 +414,6 @@ body, html {
       localStorage.setItem('language', lang);
     }
 
-
-
     // 初始化語言
     document.addEventListener('DOMContentLoaded', () => {
       const savedLang = localStorage.getItem('language') || 'en';
@@ -478,10 +460,7 @@ body, html {
         }
       });
     }
-
-
   </script>
-
 
   <!-- 引入共用 Navbar CSS -->
   <link href="navbar/navbar.css" rel="stylesheet">
@@ -489,11 +468,9 @@ body, html {
 
 </body>
 
-
 <footer class="footer">
-  <p data-i18n="indexfoter1">© 2024安比薩遊樂園。All Rights Reserved.</p>
-  <p data-i18n="indexfoter2">聯絡我們：41241211@nfu.edu.tw ｜ 41241215@nfu.edu.tw</p>
+  <p data-i18n="indexfoter1"></p>
+  <p data-i18n="indexfoter2"></p>
 </footer>
-
 
 </html>

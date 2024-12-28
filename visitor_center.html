@@ -4,18 +4,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品展示區</title>
+    <title data-i18n="title" ></title>
 
     <!-- 載入 i18n 字典 -->
     <script src="lang/visitor_center-i18n.js"></script>
+    <link rel="icon" type="image/png" sizes="16x16" href="/RFID-Project-1226/icon/Ambessa_icon.png">
+
 
     <!-- 新增彈窗的 HTML -->
     <div id="balanceModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
-            <h2 data-i18n="modal.insufficientBalance">餘額不足</h2>
+            <h2 data-i18n="modal.insufficientBalance"></h2>
             <a href="top-up.html">
-                <button data-i18n="modal.goTopUp">前往儲值</button>
+                <button data-i18n="modal.goTopUp"></button>
             </a>
         </div>
     </div>
@@ -828,19 +830,19 @@
 
 <body>
     <header>
-        <h1 data-i18n="header.title">遊客中心</h1>
+        <h1 data-i18n="header.title"></h1>
         <nav style="position: absolute; top: 15px; right: 20px; display: flex; align-items: center;">
             <a href="check-in.html" data-i18n="nav.checkIn"
                 style="margin-right: 15px; text-decoration: none; font-weight: bold; color:#fcfbfb;">
-                檢票出口
+                
             </a>
             <a href="top-up.html" data-i18n="nav.topUp"
                 style="margin-right: 15px; text-decoration: none; font-weight: bold; color:#fcfbfb;">
-                儲值
+                
             </a>
             <a href="balance.html" data-i18n="nav.balance"
                 style="text-decoration: none; font-weight: bold; color:#fcfbfb;">
-                查詢餘額
+                
             </a>
 
             <!-- 語言切換按鈕 -->
@@ -863,104 +865,104 @@
         <div class="product">
             <img src="https://gw.alicdn.com/imgextra/i2/1794692941/O1CN01qurNND1Xb1pLC8oxO_!!2-item_pic.png_.webp"
                 alt="商品圖片">
-            <h3 data-i18n="product.mascotDoll">吉祥物公仔</h3>
+            <h3 data-i18n="product.mascotDoll"></h3>
             <p>$150</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '吉祥物公仔', 150)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '吉祥物公仔', 150)"></button>
         </div>
 
         <div class="product">
             <img src="https://down-tw.img.susercontent.com/file/sg-11134201-22120-za678ya9l0kvc0" alt="商品圖片">
-            <h3 data-i18n="product.bumperCarKeychain">碰碰車吊飾</h3>
+            <h3 data-i18n="product.bumperCarKeychain"></h3>
             <p>$170</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '碰碰車吊飾', 170)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '碰碰車吊飾', 170)"></button>
         </div>
 
         <div class="product">
             <img src="https://i5.momoshop.com.tw/1723030144/goodsimg/TP000/2750/0001/108/TP00027500001108_R_m.jpg"
                 alt="商品圖片">
-            <h3 data-i18n="product.coffeeCup">旋轉咖啡杯</h3>
+            <h3 data-i18n="product.coffeeCup"></h3>
             <p>$170</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '旋轉咖啡杯', 170)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '旋轉咖啡杯', 170)"></button>
         </div>
     </div>
 
     <div class="container">
         <div class="product">
             <img src="https://creativepark.canon/images/contents/CNT-0010362/CNT-0010362_detail-01_s@2x.jpg" alt="商品圖片">
-            <h3 data-i18n="product.carousel">旋轉木馬</h3>
+            <h3 data-i18n="product.carousel"></h3>
             <p>$220</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '旋轉木馬', 220)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '旋轉木馬', 220)"></button>
         </div>
 
         <div class="product">
             <img src="https://i1.momoshop.com.tw/1727845647/goodsimg/0013/267/252/13267252_O_m.webp" alt="商品圖片">
-            <h3 data-i18n="product.pirateShip">海盜船</h3>
+            <h3 data-i18n="product.pirateShip"></h3>
             <p>$320</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '海盜船', 320)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '海盜船', 320)"></button>
         </div>
 
         <div class="product">
             <img src="https://m.media-amazon.com/images/I/81fKdgBXnpL.jpg" alt="商品圖片">
-            <h3 data-i18n="product.ferrisWheel">摩天輪</h3>
+            <h3 data-i18n="product.ferrisWheel"></h3>
             <p>$370</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '摩天輪', 370)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '摩天輪', 370)"></button>
         </div>
     </div>
 
     <div class="container">
         <div class="product">
             <img src="https://www.tienlystore.com/File/Image/1a4799c3-8993-4cad-86d3-9dfc62055aeb?index=3" alt="商品圖片">
-            <h3 data-i18n="product.rollerCoaster">雲霄飛車</h3>
+            <h3 data-i18n="product.rollerCoaster"></h3>
             <p>$450</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '雲霄飛車', 450)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '雲霄飛車', 450)"></button>
         </div>
 
         <div class="product">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Republic_Of_Korea_Broadcasting-TV_Rating_System%28ALL%29.svg/1200px-Republic_Of_Korea_Broadcasting-TV_Rating_System%28ALL%29.svg.png"
                 alt="商品圖片">
-            <h3 data-i18n="product.fullSet">整組兌換</h3>
+            <h3 data-i18n="product.fullSet"></h3>
             <p>$1500</p>
             <div class="quantity-controls">
                 <button onclick="updateQuantity(this.nextElementSibling, -1)">-</button>
                 <input type="text" value="1" readonly>
                 <button onclick="updateQuantity(this.previousElementSibling, 1)">+</button>
             </div>
-            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '整組兌換', 1500)">加入購物車</button>
+            <button data-i18n="addToCart" onclick="handleBuyButton(this.parentElement, '整組兌換', 1500)"></button>
         </div>
     </div>
 
@@ -971,9 +973,9 @@
 
     <!-- 購物車側邊欄 -->
     <div class="cart-sidebar">
-        <h2 data-i18n="cart">購物車</h2>
+        <h2 data-i18n="cart"></h2>
         <div class="cart-items"></div>
-        <button class="checkout-btn" data-i18n="checkout" onclick="checkout()">結帳</button>
+        <button class="checkout-btn" data-i18n="checkout" onclick="checkout()"></button>
     </div>
 
 </body>
