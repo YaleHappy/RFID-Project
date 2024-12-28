@@ -379,59 +379,66 @@
     // 7) 查詢交易紀錄
     // ------------------------
     function fetchTransactions(rfid, start, end) {
-      currentRFID = rfid;
-      const startTime = new Date(start).getTime();
-      const endTime = new Date(end).getTime() + 86400000 - 1; // inclusive end of day
+  currentRFID = rfid;
+  const startTime = parseDateLocal(start);
+  const endTime = parseDateLocal(end) + 86400000 - 1; // inclusive end of day
 
-      const transactionsPath = currentLanguage === 'en' ? `transactions-en/${rfid}` : `transactions/${rfid}`;
-      const transactionsRef = ref(db, transactionsPath);
+  const transactionsPath = currentLanguage === 'en' ? `transactions-en/${rfid}` : `transactions/${rfid}`;
+  const transactionsRef = ref(db, transactionsPath);
 
-      Swal.fire({
-        title: translations[currentLanguage].querying || "查詢中",
-        text: translations[currentLanguage].loadingTransactions || "正在查詢交易紀錄，請稍候...",
-        allowOutsideClick: false,
-        didOpen: () => Swal.showLoading(),
-      });
+  Swal.fire({
+    title: translations[currentLanguage].querying || "查詢中",
+    text: translations[currentLanguage].loadingTransactions || "正在查詢交易紀錄，請稍候...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading(),
+  });
 
-      // 移除之前的監聽器
-      if (unsubscribeTransactions) unsubscribeTransactions();
-      if (unsubscribeBalance) unsubscribeBalance();
+  // 移除之前的監聽器
+  if (unsubscribeTransactions) unsubscribeTransactions();
+  if (unsubscribeBalance) unsubscribeBalance();
 
-      unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
-        Swal.close();
-        transactionList.innerHTML = "";
+  unsubscribeTransactions = onValue(transactionsRef, (snapshot) => {
+    Swal.close();
+    transactionList.innerHTML = "";
 
-        if (snapshot.exists()) {
-          let hasData = false;
+    if (snapshot.exists()) {
+      let hasData = false;
 
-          snapshot.forEach((child) => {
-            const { type, amount, timestamp } = child.val() || {};
-            const tMs = parseLocalizedTimestamp(timestamp);
-            if (tMs >= startTime && tMs <= endTime) {
-              hasData = true;
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                <td>${type || "-"}</td>
-                <td>${amount ?? 0}</td>
-                <td>${timestamp}</td>
-              `;
-              transactionList.appendChild(row);
-            }
-          });
-
-          if (!hasData) {
-            transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactionsInRange">範圍內無交易紀錄</td></tr>`;
-          }
-        } else {
-          transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactions">尚無交易紀錄</td></tr>`;
+      snapshot.forEach((child) => {
+        const { type, amount, timestamp } = child.val() || {};
+        const tMs = parseLocalizedTimestamp(timestamp);
+        if (tMs >= startTime && tMs <= endTime) {
+          hasData = true;
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${type || "-"}</td>
+            <td>${amount ?? 0}</td>
+            <td>${timestamp}</td>
+          `;
+          transactionList.appendChild(row);
         }
-
-        selectedDateTitle.textContent = `${translations[currentLanguage].dateRangeTitle || "選擇日期範圍"} ${start} ${translations[currentLanguage].to || "至"} ${end}`;
-
-        // 顯示餘額
-        setupRealtimeBalance(rfid);
       });
+
+      if (!hasData) {
+        transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactionsInRange">範圍內無交易紀錄</td></tr>`;
+      }
+    } else {
+      transactionList.innerHTML = `<tr><td colspan="3" class="text-center" data-i18n="noTransactions">尚無交易紀錄</td></tr>`;
     }
+
+    selectedDateTitle.textContent = `${translations[currentLanguage].dateRangeTitle || "選擇日期範圍"} ${start} ${translations[currentLanguage].to || "至"} ${end}`;
+
+    // 顯示餘額
+    setupRealtimeBalance(rfid);
+  });
+
+  
+}
+function parseDateLocal(dateStr) {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day).getTime();
+}
+
 
     // ------------------------
     // 8) 設置實時餘額更新
@@ -460,25 +467,60 @@
     // 9) 本地化時間
     // ------------------------
     function parseLocalizedTimestamp(tStr) {
-      const match = tStr?.match(
-        /(\d{4})\/(\d{2})\/(\d{2})\s+(上午|下午)(\d{1,2}):(\d{2}):(\d{2})/
-      );
-      if (!match) return null;
+  const match = tStr?.match(
+    /(\d{4})\/(\d{2})\/(\d{2})\s+(上午|下午)(\d{1,2}):(\d{2}):(\d{2})/
+  );
+  if (!match) return null;
 
-      const [_, yyyy, MM, dd, period, hh, mm, ss] = match;
-      let hour = parseInt(hh, 10);
-      if (period === "下午" && hour < 12) hour += 12;
-      else if (period === "上午" && hour === 12) hour = 0;
+  const [_, yyyy, MM, dd, period, hh, mm, ss] = match;
+  let hour = parseInt(hh, 10);
+  if (period === "下午" && hour < 12) hour += 12;
+  else if (period === "上午" && hour === 12) hour = 0;
 
-      return new Date(
-        parseInt(yyyy),
-        parseInt(MM) - 1,
-        parseInt(dd),
-        hour,
-        parseInt(mm),
-        parseInt(ss)
-      ).getTime();
-    }
+  return new Date(
+    parseInt(yyyy),
+    parseInt(MM) - 1,
+    parseInt(dd),
+    hour,
+    parseInt(mm),
+    parseInt(ss)
+  ).getTime();
+}
+
+
+
+function formatTimestamp(tMs) {
+  if (!tMs) return "-";
+  const date = new Date(tMs);
+  let options;
+  let locale;
+
+  if (currentLanguage === 'en') {
+    locale = 'en-US';
+    options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true, // 使用12小時制
+    };
+  } else {
+    locale = 'zh-TW';
+    options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true, // 使用12小時制
+    };
+  }
+
+  return new Intl.DateTimeFormat(locale, options).format(date);
+}
 
     // ------------------------
     // 10) 初始化頁面
