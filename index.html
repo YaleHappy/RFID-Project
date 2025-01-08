@@ -349,10 +349,52 @@
   
 </body>
 
-<footer>
+<!-- 頁腳區域 -->
+<footer class="footer text-center mt-5">
   <p data-i18n="indexfoter1"></p>
   <p data-i18n="indexfoter2"></p>
-
+  <!-- 新增一個按鈕來展開使用者規範 Modal -->
+  <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#userGuidelineModal" data-i18n="checkuserrulemodal">
+    查看使用者規範與操作說明
+  </button>
 </footer>
+
+<!-- 使用者規範與操作說明 Modal -->
+<div class="modal fade" id="userGuidelineModal" tabindex="-1" aria-labelledby="userGuidelineModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- 新增 data-i18n 屬性以便翻譯 -->
+        <h5 class="modal-title" id="userGuidelineModalLabel" data-i18n="userGuidelineTitle">
+          使用者規範與操作說明
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+      </div>
+      <div class="modal-body">
+        <!-- 使用者規範標題 -->
+        <h6 data-i18n="userGuidelineHeading">使用者規範</h6>
+        <ul>
+          <li data-i18n="userGuidelinePoint1">如果有其他需求，請知會我們一聲，感謝</li>
+          <!-- 根據需要添加更多規範條款，並給予相應的 data-i18n 屬性 -->
+        </ul>
+        <hr>
+        <!-- 使用者操作說明標題 -->
+        <h6 data-i18n="userOperationHeading">使用者操作說明</h6>
+        <p data-i18n="userOperationInstruction">
+          系統中有隱藏的聚焦框（Focus Box）
+          您可以直接在背景輸入RFID並按下 <kbd>Enter</kbd> 鍵來提交操作，而不需要點擊特定按鈕。 
+          例如，像是在儲值頁面，會有框直接輸入會顯示ID，在其他頁面也是同理，只是隱藏起來了而已。
+        </p>
+        <p data-i18n="userAdditionalNote">
+        </p>
+        <!-- 可根據需 要添加更多操作說明 -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="closeButton">關閉</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </html>
